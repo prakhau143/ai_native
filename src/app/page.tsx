@@ -1,65 +1,208 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useRef, useState } from "react";
+import { Header } from "@/components/Header";
+import { Hero } from "@/components/Hero";
+import { AuditForm } from "@/components/AuditForm";
+import { ResultsPanel } from "@/components/ResultsPanel";
+import { LeadCapture } from "@/components/LeadCapture";
+import { HighSavingsCTA, LowSavingsCTA } from "@/components/SavingsCTA";
+import { SlidePanel } from "@/components/SlidePanel";
+import { runAudit, type ToolEntry, type AuditResult } from "@/lib/auditEngine";
+
+type AppState = "landing" | "loading" | "lead-capture" | "results";
+
+export default function HomePage() {
+  const [state, setState] = useState<AppState>("landing");
+  const [result, setResult] = useState<AuditResult | null>(null);
+  const [auditId, setAuditId] = useState<string | null>(null);
+  const [pendingTools, setPendingTools] = useState<ToolEntry[]>([]);
+  const [isSubmittingLead, setIsSubmittingLead] = useState(false);
+  const formRef = useRef<HTMLElement>(null);
+
+  const scrollToForm = () =>
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  // Step 1: Run rule engine, show lead capture gate
+  const handleAudit = async (tools: ToolEntry[]) => {
+    setState("loading");
+    await new Promise((res) => setTimeout(res, 1000));
+    const auditResult = runAudit(tools);
+    setPendingTools(tools);
+    setResult(auditResult);
+    setState("lead-capture");
+  };
+
+  // Step 2: Save to DB + send email, then show results
+  const handleLeadSubmit = async (email: string, company: string) => {
+    if (!result) return;
+    setIsSubmittingLead(true);
+
+    try {
+      // Save audit to Supabase
+      const saveRes = await fetch("/api/save-audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          company,
+          tools: pendingTools,
+          result,
+          honeypot: "", // always empty on legitimate submit
+        }),
+      });
+
+      const { publicId } = saveRes.ok
+        ? await saveRes.json()
+        : { publicId: null };
+
+      if (publicId) setAuditId(publicId);
+
+      // Fire-and-forget confirmation email
+      fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          savings: result.totalSaving,
+          annualSaving: result.annualSaving,
+          publicId: publicId ?? "unknown",
+          savingsTier: result.savingsTier,
+        }),
+      }).catch(() => {}); // non-blocking
+
+    } catch {
+      // Network error — still show results
+    }
+
+    setState("results");
+    setIsSubmittingLead(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleReset = () => {
+    setResult(null);
+    setAuditId(null);
+    setPendingTools([]);
+    setState("landing");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleNotifyMe = async (email: string) => {
+    await fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="min-h-screen flex flex-col">
+      <Header />
+
+      <main className="flex-1">
+        {/* Hero — only on landing */}
+        {state === "landing" && <Hero onAuditClick={scrollToForm} />}
+
+        {/* Form — landing + loading states */}
+        {(state === "landing" || state === "loading") && (
+          <section ref={formRef}>
+            <AuditForm onSubmit={handleAudit} isLoading={state === "loading"} />
+          </section>
+        )}
+
+        {/* Loading overlay */}
+        {state === "loading" && (
+          <div className="fixed inset-0 z-40 flex items-center justify-center"
+            style={{ background: "rgba(5,11,26,0.75)", backdropFilter: "blur(8px)" }}>
+            <div className="text-center animate-fade-up">
+              <div className="relative mx-auto mb-6 h-16 w-16">
+                <div className="absolute inset-0 rounded-full animate-ping" style={{ background: "rgba(6,182,212,0.25)" }} />
+                <div className="relative flex h-16 w-16 items-center justify-center rounded-full"
+                  style={{ background: "linear-gradient(135deg, #06b6d4, #6366f1)" }}>
+                  <span className="text-2xl">⚡</span>
+                </div>
+              </div>
+              <p className="text-white font-semibold text-lg mb-1">Analysing your stack…</p>
+              <p className="text-slate-400 text-sm">Finding savings opportunities</p>
+            </div>
+          </div>
+        )}
+
+        {/* Lead capture gate (shown after engine runs) */}
+        {state === "lead-capture" && result && (
+          <LeadCapture
+            estimatedSaving={result.totalSaving}
+            onSubmit={handleLeadSubmit}
+            isSubmitting={isSubmittingLead}
+          />
+        )}
+
+        {/* Results */}
+        {state === "results" && result && (
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            {/* High-savings Credex CTA — shown prominently at top */}
+            {result.savingsTier === "high" && (
+              <div className="pt-10">
+                <HighSavingsCTA totalSaving={result.totalSaving} auditId={auditId ?? undefined} />
+              </div>
+            )}
+
+            <ResultsPanel
+              result={result}
+              onReset={handleReset}
+              shareUrl={auditId ? `${window.location.origin}/results/${auditId}?public=true` : undefined}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+            {/* Low/optimal savings CTA */}
+            {(result.savingsTier === "optimal" || result.savingsTier === "low") && (
+              <div className="pb-16">
+                <LowSavingsCTA totalSaving={result.totalSaving} onNotifySubmit={handleNotifyMe} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* "How it works" — only on landing */}
+        {state === "landing" && <HowItWorks />}
       </main>
+
+      <footer className="py-10 text-center" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <p className="text-slate-600 text-sm">© 2026 SpendWiseAI — Made for founders who ship fast.</p>
+      </footer>
+
+      <SlidePanel />
     </div>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    { n: "01", title: "Add your tools", body: "List every AI subscription your team pays for. Takes 2 minutes.", color: "#06b6d4" },
+    { n: "02", title: "Get instant analysis", body: "Our engine compares your stack against 8 AI tools, plans, and usage patterns.", color: "#6366f1" },
+    { n: "03", title: "Save immediately", body: "Follow the action plan. Switch plans, cut seats, eliminate overlap — done.", color: "#a855f7" },
+  ];
+
+  return (
+    <section id="how" className="py-20 px-4 sm:px-6" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="mx-auto max-w-4xl">
+        <div className="text-center mb-14">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">How it works</h2>
+          <p className="text-slate-400">Three steps. No fluff.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {steps.map((s) => (
+            <div key={s.n} className="glass-card rounded-2xl p-6 text-center hover:-translate-y-1 transition-transform duration-200">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl text-lg font-black"
+                style={{ background: `${s.color}22`, border: `1px solid ${s.color}44`, color: s.color }}>
+                {s.n}
+              </div>
+              <h3 className="font-bold text-white mb-2">{s.title}</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
