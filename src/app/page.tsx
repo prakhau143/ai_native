@@ -52,11 +52,17 @@ export default function HomePage() {
         }),
       });
 
-      const { publicId } = saveRes.ok
+      const saveData = saveRes.ok
         ? await saveRes.json()
-        : { publicId: null };
+        : { publicId: null, aiSummary: null };
 
+      const { publicId, aiSummary } = saveData;
       if (publicId) setAuditId(publicId);
+
+      // Replace template summary with Groq AI summary
+      if (aiSummary && result) {
+        setResult((prev) => prev ? { ...prev, summary: aiSummary } : prev);
+      }
 
       // Fire-and-forget confirmation email
       fetch("/api/send-email", {

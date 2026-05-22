@@ -3,18 +3,25 @@
 ## AI Summary Generation
 
 **File:** `src/lib/generateSummary.ts`
-**Model:** `claude-haiku-4-5-20251001` (fast + cheap for per-audit summaries)
+**Provider:** Groq (free tier) — switched from Anthropic because Groq requires no credit card
+**Model:** `llama-3.3-70b-versatile` (fast, high quality, free on Groq developer tier)
 
 ### System Prompt (final)
 
 ```
 You are a financial advisor specialising in AI tool spending for startups.
-Given an audit of a team's AI subscriptions, write a single paragraph (80–110 words) explaining:
-1. Where the biggest waste is
-2. What the team should do first
-3. The potential annual impact
+Write short, actionable spending audits.
+```
 
+### User Prompt Template
+
+```
+Analyze this audit and write a single paragraph (80–110 words) for a startup.
+Explain: (1) where the biggest waste is, (2) what to do first, (3) the potential annual impact.
 Be direct, encouraging, and specific. Use "$" figures. No bullet points. No headers. Plain prose only.
+
+Audit data:
+{auditData JSON}
 ```
 
 ### Prompt Evolution
@@ -28,6 +35,17 @@ Be direct, encouraging, and specific. Use "$" figures. No bullet points. No head
 
 ### Edge Cases Handled
 
-- **Key not present:** Falls back to `result.summary` (template string from engine) — no API call, no error
+- **Key not present:** Falls back to `result.summary` (template string from `auditEngine.ts`) — no API call, no error
 - **API timeout / error:** `try/catch` returns template fallback — audit still completes
-- **Zero savings:** Template handles this case explicitly ("Your stack is well-optimised...")
+- **Zero savings:** Template handles this case explicitly
+
+### Why Groq Instead of Anthropic
+
+Anthropic free credits require manual approval; Groq works immediately with no credit card.
+The API is OpenAI-compatible so switching providers later is trivial.
+
+### What We Tried That Didn't Work
+
+- Anthropic API — requires paid credits or manual free-credit approval
+- OpenAI API — same paid requirement
+- Client-side LLM — not feasible in a serverless Next.js environment

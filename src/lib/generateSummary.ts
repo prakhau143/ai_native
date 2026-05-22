@@ -1,22 +1,12 @@
-import Anthropic from "@anthropic-ai/sdk";
+import Groq from "groq-sdk";
 import type { AuditResult } from "./auditEngine";
 
-const SYSTEM_PROMPT = `You are a financial advisor specialising in AI tool spending for startups.
-Given an audit of a team's AI subscriptions, write a single paragraph (80–110 words) explaining:
-1. Where the biggest waste is
-2. What the team should do first
-3. The potential annual impact
-
-Be direct, encouraging, and specific. Use "$" figures. No bullet points. No headers. Plain prose only.`;
+const SYSTEM_PROMPT =
+  "You are a financial advisor specialising in AI tool spending for startups. Write short, actionable spending audits.";
 
 export async function generateAISummary(result: AuditResult): Promise<string> {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) {
-    // Fallback to template when key not present (dev/test)
-    return result.summary;
-  }
-
-  const client = new Anthropic({ apiKey: key });
+  const key = process.env.GROQ_API_KEY;
+  if (!key) return result.summary;
 
   const auditData = {
     totalCurrentCost: result.totalCurrentCost,
@@ -34,24 +24,28 @@ export async function generateAISummary(result: AuditResult): Promise<string> {
       })),
   };
 
+  const prompt = `Analyze this audit and write a single paragraph (80–110 words) for a startup.
+Explain: (1) where the biggest waste is, (2) what to do first, (3) the potential annual impact.
+Be direct, encouraging, and specific. Use "$" figures. No bullet points. No headers. Plain prose only.
+
+Audit data:
+${JSON.stringify(auditData, null, 2)}`;
+
   try {
-    const message = await client.messages.create({
-      model: "claude-haiku-4-5-20251001", // fast + cheap for summaries
-      max_tokens: 200,
-      system: SYSTEM_PROMPT,
+    const groq = new Groq({ apiKey: key });
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.5,
+      max_tokens: 250,
       messages: [
-        {
-          role: "user",
-          content: `Audit data:\n${JSON.stringify(auditData, null, 2)}`,
-        },
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: prompt },
       ],
     });
 
-    const content = message.content[0];
-    if (content.type === "text") return content.text;
-    return result.summary;
+    return completion.choices[0]?.message?.content?.trim() || result.summary;
   } catch (err) {
     console.error("generateAISummary error:", err);
-    return result.summary; // Graceful fallback
+    return result.summary;
   }
 }
