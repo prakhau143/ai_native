@@ -8,6 +8,8 @@ import { ResultsPanel } from "@/components/ResultsPanel";
 import { LeadCapture } from "@/components/LeadCapture";
 import { HighSavingsCTA, LowSavingsCTA } from "@/components/SavingsCTA";
 import { SlidePanel } from "@/components/SlidePanel";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { LandingSections } from "@/components/LandingSections";
 import { runAudit, type ToolEntry, type AuditResult } from "@/lib/auditEngine";
 
 type AppState = "landing" | "loading" | "lead-capture" | "results";
@@ -64,7 +66,7 @@ export default function HomePage() {
         setResult((prev) => prev ? { ...prev, summary: aiSummary } : prev);
       }
 
-      // Fire-and-forget confirmation email
+      // Fire-and-forget confirmation email (includes AI summary if available)
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,6 +76,7 @@ export default function HomePage() {
           annualSaving: result.annualSaving,
           publicId: publicId ?? "unknown",
           savingsTier: result.savingsTier,
+          aiSummary: aiSummary ?? undefined,
         }),
       }).catch(() => {}); // non-blocking
 
@@ -103,7 +106,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      <AnimatedBackground />
+      <div className="relative z-10 flex flex-col min-h-screen">
       <Header />
 
       <main className="flex-1">
@@ -146,10 +151,10 @@ export default function HomePage() {
 
         {/* Results */}
         {state === "results" && result && (
-          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="w-full">
             {/* High-savings Credex CTA — shown prominently at top */}
             {result.savingsTier === "high" && (
-              <div className="pt-10">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10">
                 <HighSavingsCTA totalSaving={result.totalSaving} auditId={auditId ?? undefined} />
               </div>
             )}
@@ -162,49 +167,67 @@ export default function HomePage() {
 
             {/* Low/optimal savings CTA */}
             {(result.savingsTier === "optimal" || result.savingsTier === "low") && (
-              <div className="pb-16">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
                 <LowSavingsCTA totalSaving={result.totalSaving} onNotifySubmit={handleNotifyMe} />
               </div>
             )}
           </div>
         )}
 
-        {/* "How it works" — only on landing */}
-        {state === "landing" && <HowItWorks />}
+        {/* "How it works" + all landing sections — only on landing */}
+        {state === "landing" && (
+          <>
+            <HowItWorks />
+            <LandingSections onAuditClick={scrollToForm} />
+          </>
+        )}
       </main>
 
-      <footer className="py-10 text-center" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <p className="text-slate-600 text-sm">© 2026 SpendWiseAI — Made for founders who ship fast.</p>
+      <footer className="py-10 text-center" style={{ borderTop: "1px solid var(--card-border)" }}>
+        <p className="text-sm" style={{ color: "var(--foreground)", opacity: 0.35 }}>
+          © 2026 SpendWiseAI — Made for founders who ship fast.
+        </p>
       </footer>
 
       <SlidePanel />
+      </div>
     </div>
   );
 }
 
 function HowItWorks() {
   const steps = [
-    { n: "01", title: "Add your tools", body: "List every AI subscription your team pays for. Takes 2 minutes.", color: "#06b6d4" },
-    { n: "02", title: "Get instant analysis", body: "Our engine compares your stack against 8 AI tools, plans, and usage patterns.", color: "#6366f1" },
-    { n: "03", title: "Save immediately", body: "Follow the action plan. Switch plans, cut seats, eliminate overlap — done.", color: "#a855f7" },
+    { n: "01", title: "Add your tools", body: "List every AI subscription your team pays for — takes 2 minutes. We support 30+ tools.", color: "#06b6d4" },
+    { n: "02", title: "Get instant analysis", body: "Our AI engine compares your stack against 30+ tools, plans, and usage patterns to find waste.", color: "#6366f1" },
+    { n: "03", title: "Save immediately", body: "Follow prioritised action items. Switch plans, cut seats, eliminate overlap — save in days, not months.", color: "#a855f7" },
   ];
 
   return (
-    <section id="how" className="py-20 px-4 sm:px-6" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-      <div className="mx-auto max-w-4xl">
+    <section id="how" className="py-20 px-4 sm:px-6" style={{ borderTop: "1px solid var(--card-border)" }}>
+      <div className="mx-auto max-w-5xl">
         <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">How it works</h2>
-          <p className="text-slate-400">Three steps. No fluff.</p>
+          <h2
+            className="text-3xl sm:text-4xl font-extrabold mb-3"
+            style={{ color: "var(--foreground)" }}
+          >
+            How it works
+          </h2>
+          <p style={{ color: "var(--foreground)", opacity: 0.5 }}>Three steps. No fluff.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {steps.map((s) => (
-            <div key={s.n} className="glass-card rounded-2xl p-6 text-center hover:-translate-y-1 transition-transform duration-200">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl text-lg font-black"
-                style={{ background: `${s.color}22`, border: `1px solid ${s.color}44`, color: s.color }}>
+            <div
+              key={s.n}
+              className="glass-panel rounded-2xl p-6 text-center hover:-translate-y-1 transition-transform duration-200"
+            >
+              <div
+                className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl text-lg font-black"
+                style={{ background: `${s.color}18`, border: `1px solid ${s.color}35`, color: s.color }}
+              >
                 {s.n}
               </div>
-              <h3 className="font-bold text-white mb-2">{s.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{s.body}</p>
+              <h3 className="font-bold mb-2" style={{ color: "var(--foreground)" }}>{s.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)", opacity: 0.55 }}>{s.body}</p>
             </div>
           ))}
         </div>

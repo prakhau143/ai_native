@@ -18,9 +18,12 @@ const USE_CASES: { value: UseCase; label: string }[] = [
   { value: "coding", label: "Coding / Dev" },
   { value: "writing", label: "Writing / Content" },
   { value: "research", label: "Research" },
-  { value: "image", label: "Image gen" },
-  { value: "voice", label: "Voice / Audio" },
-  { value: "general", label: "General" },
+  { value: "image", label: "Image Generation" },
+  { value: "video", label: "Video Generation" },
+  { value: "audio", label: "Audio / Voice" },
+  { value: "voice", label: "Voice Cloning" },
+  { value: "data", label: "Data / Analytics" },
+  { value: "general", label: "General AI" },
 ];
 
 function uid() {
