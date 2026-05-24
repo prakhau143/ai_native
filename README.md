@@ -15,10 +15,31 @@ A free CFO-style audit tool that reviews your company's AI subscriptions (ChatGP
 ---
 
 ## 📸 Screenshots
+## 📸 Screenshots
 
-| Landing page | Audit form | Results page |
-|---|---|---|
-| ![Landing](public/screenshots/landing.png) | ![Form](public/screenshots/form.png) | ![Results](public/screenshots/results.png) |
+<table>
+  <tr>
+    <td align="center"><b>Landing Page</b></td>
+    <td align="center"><b>Audit Form</b></td>
+    <td align="center"><b>Results Page</b></td>
+  </tr>
+
+  <tr>
+      
+    <td>
+      <img src="./public/landing_page.png" width="300" />
+    </td>
+
+    <td>
+      <img src="./public/audit_form.png" width="300" />
+    </td>
+
+    <td>
+      <img src="./public/dark_mode.png" width="300" />
+    </td>
+    
+  </tr>
+</table>
 
 *(Add real screenshots to `public/screenshots/` before submitting.)*
 
