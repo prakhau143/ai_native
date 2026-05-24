@@ -238,6 +238,25 @@ const RULES: Rule[] = [
     ],
   },
 
+  // ── Anthropic API: very high spend → Credex (must come before >200 rule) ──
+  {
+    match: (e) => e.toolId === "anthropic_api" && e.monthlySpend > 400,
+    action: "api-switch",
+    priority: "critical",
+    confidence: 90,
+    implementationTime: "1 day",
+    suggestedTool: () => "Anthropic API via Credex",
+    suggestedPlan: () => "Discounted credits",
+    newCostPerSeat: (e) => e.monthlySpend * 0.72,
+    reason: (e) =>
+      `$${e.monthlySpend}/mo on Anthropic API qualifies for Credex volume discounts (20-28%). That's $${Math.round(e.monthlySpend * 0.28)}/mo back with zero code changes.`,
+    tips: () => [
+      "Same API endpoint — only billing changes through Credex",
+      "Volume discount increases with spend (up to 30% at $1k+/mo)",
+      "Pair with Groq routing for compounding savings",
+    ],
+  },
+
   // ── Anthropic API: high spend → suggest Groq for non-critical tasks ──────
   {
     match: (e) => e.toolId === "anthropic_api" && e.monthlySpend > 200,
@@ -258,22 +277,22 @@ const RULES: Rule[] = [
     ],
   },
 
-  // ── Anthropic API: very high spend → Credex discounted credits ───────────
+  // ── OpenAI API: very high spend → Credex (must come before >200 rule) ──────
   {
-    match: (e) => e.toolId === "anthropic_api" && e.monthlySpend > 400,
+    match: (e) => e.toolId === "openai_api" && e.monthlySpend > 400,
     action: "api-switch",
     priority: "critical",
     confidence: 90,
     implementationTime: "1 day",
-    suggestedTool: () => "Anthropic API via Credex",
+    suggestedTool: () => "OpenAI API via Credex",
     suggestedPlan: () => "Discounted credits",
-    newCostPerSeat: (e) => e.monthlySpend * 0.72,
+    newCostPerSeat: (e) => e.monthlySpend * 0.75,
     reason: (e) =>
-      `$${e.monthlySpend}/mo on Anthropic API qualifies for Credex volume discounts (20-28%). That's $${Math.round(e.monthlySpend * 0.28)}/mo back with zero code changes.`,
+      `$${e.monthlySpend}/mo on OpenAI API. Credex volume pricing cuts this by 20-30%. No code changes needed — same API, lower bill.`,
     tips: () => [
-      "Same API endpoint — only billing changes through Credex",
-      "Volume discount increases with spend (up to 30% at $1k+/mo)",
-      "Pair with Groq routing for compounding savings",
+      "Credex negotiates bulk API credits at discounted rates",
+      "Contact Credex with your current invoice for fastest pricing",
+      "Stack with model downgrading for maximum savings",
     ],
   },
 
@@ -293,25 +312,6 @@ const RULES: Rule[] = [
       "GPT-4o mini vs GPT-4o: 15× cost difference for similar quality on simple tasks",
       "Use OpenAI's model selector to benchmark GPT-4o mini first",
       "Mistral 7B handles summarization at $0.25/1M tokens vs GPT-4o $5/1M",
-    ],
-  },
-
-  // ── OpenAI API: very high spend → Credex ─────────────────────────────────
-  {
-    match: (e) => e.toolId === "openai_api" && e.monthlySpend > 400,
-    action: "api-switch",
-    priority: "critical",
-    confidence: 90,
-    implementationTime: "1 day",
-    suggestedTool: () => "OpenAI API via Credex",
-    suggestedPlan: () => "Discounted credits",
-    newCostPerSeat: (e) => e.monthlySpend * 0.75,
-    reason: (e) =>
-      `$${e.monthlySpend}/mo on OpenAI API. Credex volume pricing cuts this by 20-30%. No code changes needed — same API, lower bill.`,
-    tips: () => [
-      "Credex negotiates bulk API credits at discounted rates",
-      "Contact Credex with your current invoice for fastest pricing",
-      "Stack with model downgrading for maximum savings",
     ],
   },
 

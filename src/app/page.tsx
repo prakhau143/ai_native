@@ -35,7 +35,7 @@ export default function HomePage() {
   };
 
   // Step 2: Save to DB + send email, then show results
-  const handleLeadSubmit = async (email: string, company: string) => {
+  const handleLeadSubmit = async (email: string, company: string, role: string, teamSize: string) => {
     if (!result) return;
     setIsSubmittingLead(true);
 
@@ -47,6 +47,8 @@ export default function HomePage() {
         body: JSON.stringify({
           email,
           company,
+          role,
+          teamSize,
           tools: pendingTools,
           result,
           honeypot: "", // always empty on legitimate submit

@@ -10,7 +10,7 @@ A free CFO-style audit tool that reviews your company's AI subscriptions (ChatGP
 
 ## 🌐 Live Demo
 
-**Deployed URL:** https://spendwise-ai.vercel.app *(update with your actual Vercel URL after deploy)*
+**Deployed URL:** https://spendwise-ai-dun.vercel.app
 
 ---
 

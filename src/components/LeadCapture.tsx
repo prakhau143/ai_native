@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Building2, Loader2, ArrowRight, Lock } from "lucide-react";
+import { Mail, Building2, Loader2, ArrowRight, Lock, Briefcase, Users } from "lucide-react";
 
 type LeadCaptureProps = {
   estimatedSaving: number;
-  onSubmit: (email: string, company: string) => void;
+  onSubmit: (email: string, company: string, role: string, teamSize: string) => void;
   isSubmitting: boolean;
 };
 
 export function LeadCapture({ estimatedSaving, onSubmit, isSubmitting }: LeadCaptureProps) {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
+  const [teamSize, setTeamSize] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
-    onSubmit(email.trim(), company.trim());
+    onSubmit(email.trim(), company.trim(), role.trim(), teamSize.trim());
   };
 
   return (
@@ -80,6 +82,40 @@ export function LeadCapture({ estimatedSaving, onSubmit, isSubmitting }: LeadCap
                 placeholder="Acme Inc."
                 className="futuristic-input w-full rounded-xl pl-9 pr-4 py-3 text-sm"
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-cyan-400 mb-1.5 uppercase tracking-wide">
+                Role <span className="text-slate-600">(optional)</span>
+              </label>
+              <div className="relative">
+                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <input
+                  type="text"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  placeholder="Founder, CTO…"
+                  className="futuristic-input w-full rounded-xl pl-9 pr-4 py-3 text-sm"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-cyan-400 mb-1.5 uppercase tracking-wide">
+                Team size <span className="text-slate-600">(optional)</span>
+              </label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <input
+                  type="number"
+                  min={1}
+                  value={teamSize}
+                  onChange={(e) => setTeamSize(e.target.value)}
+                  placeholder="e.g. 8"
+                  className="futuristic-input w-full rounded-xl pl-9 pr-4 py-3 text-sm"
+                />
+              </div>
             </div>
           </div>
 

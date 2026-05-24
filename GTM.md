@@ -11,13 +11,16 @@
 
 ## Where They Are
 
-| Channel | Why |
-|---|---|
-| Hacker News (Show HN) | Founders who care about cost/infra |
-| r/SaaS, r/entrepreneur | Actively discussing tool costs |
-| Indie Hackers | Product-aware builders |
-| Twitter/X #buildinpublic | Viral sharing of results ("I saved $840/mo!") |
-| AI tool newsletters (TLDR AI, The Rundown) | Reach people already subscribed to AI tools |
+| Channel | Specific community | Why |
+|---|---|---|
+| Hacker News | Show HN post (Tuesday 9am EST) | Founders who care about cost/infra; Show HN posts with real savings numbers perform well |
+| Reddit | r/SaaS, r/entrepreneur, r/startups, r/MachineLearning | Active discussions about AI tool costs; post the audit link in relevant threads |
+| Indie Hackers | #show-iH channel, monthly "what are you paying for?" threads | Product-aware builders who discuss spend openly |
+| Twitter/X | #buildinpublic, #SaaS, Lenny Rachitsky's followers | Viral sharing of result screenshots ("I saved $840/mo!") |
+| Discord | Buildspace alumni server (#general), AI Engineer Discord, The Product Folks | High-trust async communities of builders paying for AI tools |
+| Slack | Indie Hackers Slack (#deals), MicroConf community Slack | Paid communities with engaged founders |
+| LinkedIn | CTO/VP Eng at 10-50 person SaaS startups (search filter) | Decision-makers who approve AI tool invoices |
+| Newsletters | TLDR AI (sponsor or newsletter swap), The Rundown AI, Ben's Bites | Already paying subscribers for AI products = pre-qualified leads |
 
 ## Week-1 Traction Plan
 

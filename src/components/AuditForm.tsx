@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const STORAGE_KEY = "spendwise_audit_form";
 import { Plus, Trash2, ChevronDown, Loader2, Sparkles, Users, DollarSign } from "lucide-react";
 import type { ToolEntry } from "@/lib/auditEngine";
 import type { UseCase } from "@/lib/tools";
@@ -45,6 +47,30 @@ function defaultEntry(): ToolEntry {
 
 export function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
   const [tools, setTools] = useState<ToolEntry[]>([defaultEntry()]);
+
+  // ── Persist form state across page reloads ──────────────────────────────
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as ToolEntry[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setTools(parsed);
+        }
+      }
+    } catch {
+      // corrupt storage — ignore, start fresh
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tools));
+    } catch {
+      // storage full or unavailable — ignore
+    }
+  }, [tools]);
+  // ────────────────────────────────────────────────────────────────────────
 
   const addTool = () => setTools((prev) => [...prev, defaultEntry()]);
   const removeTool = (id: string) => setTools((prev) => prev.filter((t) => t.id !== id));

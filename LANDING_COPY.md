@@ -73,6 +73,9 @@ All pricing verified weekly from official pricing pages (see PRICING_DATA.md). R
 **What is Credex?**
 Credex negotiates volume discounts on AI API credits for startups. They reach out only for audits with >$500/mo in savings.
 
+**Will my audit results be visible to others?**
+No. Your email is never shown on the shareable results URL — only the savings amount and tool recommendations are included. The shareable link uses a random 16-character ID with no connection to your email or company name.
+
 ---
 
 ## Copy Rationale
