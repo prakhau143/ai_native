@@ -50,9 +50,9 @@ A free CFO-style audit tool that reviews your company's AI subscriptions (ChatGP
       <sub><b>Multi-tool entry · per-seat pricing · live total</b></sub>
     </td>
     <td align="center" width="33%">
-      <a href="./public/dark_mode.png">
+      <a href="./public/result_page.png">
         <img
-          src="./public/dark_mode.png"
+          src="./public/result_page.png"
           alt="Results dashboard — CFO summary, savings breakdown, charts"
           width="100%"
           style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);"
