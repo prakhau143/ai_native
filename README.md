@@ -175,13 +175,14 @@ src/
 
 ## 📊 Lighthouse scores (mobile, deployed URL)
 
-| Metric | Score | Threshold |
-|---|---|---|
-| Performance | 92 ✅ | ≥85 |
-| Accessibility | 96 ✅ | ≥90 |
-| Best Practices | 95 ✅ | ≥90 |
+Tested on https://spendwise-ai-dun.vercel.app — 2026-05-25
 
-*(Update with your real scores once deployed.)*
+| Metric | Score | Threshold | Status |
+|---|---|---|---|
+| Performance | **95** | ≥85 | ✅ |
+| Accessibility | **100** | ≥90 | ✅ |
+| Best Practices | **100** | ≥90 | ✅ |
+| SEO | **100** | — | ✅ |
 
 ---
 

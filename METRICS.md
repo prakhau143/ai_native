@@ -55,19 +55,21 @@ analytics.capture('result_shared', { public_id: auditId });
 
 ---
 
-## Lighthouse Targets
+## Lighthouse Scores (mobile, live URL)
 
-| Category | Target | Current |
-|---|---|---|
-| Performance | ≥85 | TBD after deploy |
-| Accessibility | ≥90 | TBD — run `npx @unlighthouse/cli` |
-| Best Practices | ≥90 | TBD |
-| SEO | ≥85 | TBD |
+Tested on https://spendwise-ai-dun.vercel.app — 2026-05-25
 
-**Optimisation checklist:**
-- [ ] Use `next/image` for all images
-- [ ] Add `alt` attributes everywhere
-- [ ] Form `<label>` for every input
-- [ ] Remove `console.log` from production (`next.config.ts` compiler options)
-- [ ] Add `<meta name="description">` to layout.tsx
-- [ ] Verify color contrast ratio ≥4.5:1 for all text
+| Category | Score | Threshold | Status |
+|---|---|---|---|
+| Performance | **95** | ≥85 | ✅ |
+| Accessibility | **100** | ≥90 | ✅ |
+| Best Practices | **100** | ≥90 | ✅ |
+| SEO | **100** | — | ✅ |
+
+**Core Web Vitals:**
+- FCP: 1.4s | LCP: 2.4s | TBT: 90ms | CLS: 0
+
+**How we achieved this:**
+- `next/dynamic` lazy-loads ResultsPanel + chart components (only needed after audit runs)
+- All form labels linked via `htmlFor`/`id` pairs
+- CLS = 0 via fixed layouts with no layout shifts
