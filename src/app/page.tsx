@@ -1,15 +1,29 @@
 "use client";
 
 import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { AuditForm } from "@/components/AuditForm";
-import { ResultsPanel } from "@/components/ResultsPanel";
 import { LeadCapture } from "@/components/LeadCapture";
-import { HighSavingsCTA, LowSavingsCTA } from "@/components/SavingsCTA";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { LandingSections } from "@/components/LandingSections";
 import { runAudit, type ToolEntry, type AuditResult } from "@/lib/auditEngine";
+
+// Lazy-load heavy result components — only needed after the audit runs.
+// This keeps the landing page bundle small and improves LCP / Speed Index.
+const ResultsPanel = dynamic(
+  () => import("@/components/ResultsPanel").then((m) => ({ default: m.ResultsPanel })),
+  { ssr: false }
+);
+const HighSavingsCTA = dynamic(
+  () => import("@/components/SavingsCTA").then((m) => ({ default: m.HighSavingsCTA })),
+  { ssr: false }
+);
+const LowSavingsCTA = dynamic(
+  () => import("@/components/SavingsCTA").then((m) => ({ default: m.LowSavingsCTA })),
+  { ssr: false }
+);
 
 type AppState = "landing" | "loading" | "lead-capture" | "results";
 

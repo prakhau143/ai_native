@@ -716,25 +716,29 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
 
           <div className="max-w-lg mx-auto space-y-6">
             <div>
-              <label className="text-sm font-medium mb-2 flex justify-between" style={{ color: "var(--foreground)" }}>
+              <label htmlFor="roi-team-size" className="text-sm font-medium mb-2 flex justify-between" style={{ color: "var(--foreground)" }}>
                 <span>Team size</span>
                 <span style={{ color: "#67e8f9" }}>{teamSize} people</span>
               </label>
               <input
+                id="roi-team-size"
                 type="range" min={1} max={200} value={teamSize}
                 onChange={(e) => setTeamSize(Number(e.target.value))}
                 className="w-full accent-cyan-400"
+                aria-label="Team size"
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 flex justify-between" style={{ color: "var(--foreground)" }}>
+              <label htmlFor="roi-monthly-spend" className="text-sm font-medium mb-2 flex justify-between" style={{ color: "var(--foreground)" }}>
                 <span>Monthly AI spend</span>
                 <span style={{ color: "#a855f7" }}>${monthlySpend.toLocaleString()}/mo</span>
               </label>
               <input
+                id="roi-monthly-spend"
                 type="range" min={100} max={20000} step={100} value={monthlySpend}
                 onChange={(e) => setMonthlySpend(Number(e.target.value))}
                 className="w-full accent-purple-400"
+                aria-label="Monthly AI spend"
               />
             </div>
 

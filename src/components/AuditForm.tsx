@@ -147,11 +147,12 @@ export function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
 
                 {/* Tool */}
                 <div className="lg:col-span-1">
-                  <label className="block text-xs font-medium text-cyan-600 dark:text-cyan-400 mb-1.5 uppercase tracking-wide">
+                  <label htmlFor={`tool-${entry.id}`} className="block text-xs font-medium text-cyan-600 dark:text-cyan-400 mb-1.5 uppercase tracking-wide">
                     AI Tool
                   </label>
                   <div className="relative">
                     <select
+                      id={`tool-${entry.id}`}
                       value={entry.toolId}
                       onChange={(e) => updateEntry(entry.id, { toolId: e.target.value })}
                       className="futuristic-input w-full rounded-xl px-3 py-2.5 pr-8 text-sm appearance-none cursor-pointer"
@@ -168,11 +169,12 @@ export function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
 
                 {/* Plan */}
                 <div>
-                  <label className="block text-xs font-medium text-cyan-600 dark:text-cyan-400 mb-1.5 uppercase tracking-wide">
+                  <label htmlFor={`plan-${entry.id}`} className="block text-xs font-medium text-cyan-600 dark:text-cyan-400 mb-1.5 uppercase tracking-wide">
                     Plan
                   </label>
                   <div className="relative">
                     <select
+                      id={`plan-${entry.id}`}
                       value={entry.plan}
                       onChange={(e) => updateEntry(entry.id, { plan: e.target.value })}
                       className="futuristic-input w-full rounded-xl px-3 py-2.5 pr-8 text-sm appearance-none cursor-pointer"
@@ -189,11 +191,12 @@ export function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
 
                 {/* Use case */}
                 <div>
-                  <label className="block text-xs font-medium text-cyan-600 dark:text-cyan-400 mb-1.5 uppercase tracking-wide">
+                  <label htmlFor={`usecase-${entry.id}`} className="block text-xs font-medium text-cyan-600 dark:text-cyan-400 mb-1.5 uppercase tracking-wide">
                     Use case
                   </label>
                   <div className="relative">
                     <select
+                      id={`usecase-${entry.id}`}
                       value={entry.useCase}
                       onChange={(e) => updateEntry(entry.id, { useCase: e.target.value as UseCase })}
                       className="futuristic-input w-full rounded-xl px-3 py-2.5 pr-8 text-sm appearance-none cursor-pointer"

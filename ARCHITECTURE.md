@@ -4,8 +4,8 @@
 - **Framework:** Next.js 16 (App Router, React 19)
 - **Styling:** Tailwind CSS v4 + shadcn/ui
 - **Database:** Supabase (Postgres) — stores audits + notify list
-- **Email:** Resend — transactional confirmation emails
-- **AI Summary:** Anthropic Claude Haiku (fallback to template if key absent)
+- **Email:** Nodemailer + Gmail SMTP — transactional confirmation emails (see Decisions in README for rationale vs Resend)
+- **AI Summary:** Groq Llama-3.3-70b-versatile (fallback to template if key absent)
 - **Hosting:** Vercel (edge functions for OG image)
 
 ## Data Flow
