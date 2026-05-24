@@ -22,7 +22,7 @@ A free CFO-style audit tool that reviews your company's AI subscriptions (ChatGP
   <tr>
     <th align="center">🌐 Landing Page</th>
     <th align="center">📋 Audit Form</th>
-    <th align="center">🌙 Dark Mode Results</th>
+    <th align="center">🌙 Audit Results</th>
   </tr>
   <tr>
     <td align="center" width="33%">
