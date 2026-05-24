@@ -15,33 +15,58 @@ A free CFO-style audit tool that reviews your company's AI subscriptions (ChatGP
 ---
 
 ## 📸 Screenshots
-## 📸 Screenshots
+
+<div align="center">
 
 <table>
   <tr>
-    <td align="center"><b>Landing Page</b></td>
-    <td align="center"><b>Audit Form</b></td>
-    <td align="center"><b>Results Page</b></td>
+    <th align="center">🌐 Landing Page</th>
+    <th align="center">📋 Audit Form</th>
+    <th align="center">🌙 Dark Mode Results</th>
   </tr>
-
   <tr>
-      
-    <td>
-      <img src="./public/landing_page.png" width="300" />
+    <td align="center" width="33%">
+      <a href="./public/landing_page.png">
+        <img
+          src="./public/landing_page.png"
+          alt="Landing Page — hero, stats bar, How It Works"
+          width="100%"
+          style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);"
+        />
+      </a>
+      <br/>
+      <sub><b>Hero · stats bar · How It Works</b></sub>
     </td>
-
-    <td>
-      <img src="./public/audit_form.png" width="300" />
+    <td align="center" width="33%">
+      <a href="./public/audit_form.png">
+        <img
+          src="./public/audit_form.png"
+          alt="Audit Form — multi-tool entry with per-seat pricing"
+          width="100%"
+          style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);"
+        />
+      </a>
+      <br/>
+      <sub><b>Multi-tool entry · per-seat pricing · live total</b></sub>
     </td>
-
-    <td>
-      <img src="./public/dark_mode.png" width="300" />
+    <td align="center" width="33%">
+      <a href="./public/dark_mode.png">
+        <img
+          src="./public/dark_mode.png"
+          alt="Results dashboard — CFO summary, savings breakdown, charts"
+          width="100%"
+          style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);"
+        />
+      </a>
+      <br/>
+      <sub><b>CFO dashboard · AI summary · savings charts</b></sub>
     </td>
-    
   </tr>
 </table>
 
-*(Add real screenshots to `public/screenshots/` before submitting.)*
+> 💡 Click any screenshot to view full-size
+
+</div>
 
 ---
 
