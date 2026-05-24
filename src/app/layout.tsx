@@ -18,7 +18,10 @@ export const metadata: Metadata = {
   description:
     "Get a free instant audit of your AI stack. Save up to 60% on monthly subscriptions with personalized recommendations.",
   icons: {
-    icon: "/icon.svg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-mono.svg", type: "image/svg+xml", sizes: "32x32" },
+    ],
     shortcut: "/icon.svg",
     apple: "/icon.svg",
   },

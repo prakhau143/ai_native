@@ -7,7 +7,6 @@ import { AuditForm } from "@/components/AuditForm";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { LeadCapture } from "@/components/LeadCapture";
 import { HighSavingsCTA, LowSavingsCTA } from "@/components/SavingsCTA";
-import { SlidePanel } from "@/components/SlidePanel";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { LandingSections } from "@/components/LandingSections";
 import { runAudit, type ToolEntry, type AuditResult } from "@/lib/auditEngine";
@@ -184,12 +183,11 @@ export default function HomePage() {
       </main>
 
       <footer className="py-10 text-center" style={{ borderTop: "1px solid var(--card-border)" }}>
-        <p className="text-sm" style={{ color: "var(--foreground)", opacity: 0.35 }}>
+        <p className="text-sm text-muted">
           © 2026 SpendWiseAI — Made for founders who ship fast.
         </p>
       </footer>
 
-      <SlidePanel />
       </div>
     </div>
   );
@@ -212,7 +210,7 @@ function HowItWorks() {
           >
             How it works
           </h2>
-          <p style={{ color: "var(--foreground)", opacity: 0.5 }}>Three steps. No fluff.</p>
+          <p className="text-sm text-muted">Three steps. No fluff.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {steps.map((s) => (
@@ -227,7 +225,7 @@ function HowItWorks() {
                 {s.n}
               </div>
               <h3 className="font-bold mb-2" style={{ color: "var(--foreground)" }}>{s.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)", opacity: 0.55 }}>{s.body}</p>
+              <p className="text-sm leading-relaxed text-soft">{s.body}</p>
             </div>
           ))}
         </div>

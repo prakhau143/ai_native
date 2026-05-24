@@ -40,21 +40,25 @@ export function SlidePanel() {
       <SheetContent
         side="right"
         className="w-80 border-l p-0 flex flex-col"
-        style={{ background: "rgba(5,11,26,0.97)", borderColor: "rgba(255,255,255,0.08)", backdropFilter: "blur(20px)" }}
+        style={{
+          background: "var(--card-solid)",
+          borderColor: "var(--card-border)",
+          backdropFilter: "blur(20px)",
+        }}
       >
         {/* Accessible title/description (visually rendered in the header below) */}
         <SheetTitle className="sr-only">My Dashboard</SheetTitle>
         <SheetDescription className="sr-only">Manage saved audits, referrals, and settings</SheetDescription>
 
         {/* Panel header */}
-        <div className="px-6 pt-6 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+        <div className="px-6 pt-6 pb-4" style={{ borderBottom: "1px solid var(--card-border)" }}>
           <div className="flex items-center gap-2 mb-0.5">
             <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #06b6d4, #a855f7)" }}>
               <LayoutGrid className="h-4 w-4 text-white" />
             </div>
-            <span className="font-bold text-white" aria-hidden="true">My Dashboard</span>
+            <span className="font-bold text-gray-900 dark:text-white" aria-hidden="true">My Dashboard</span>
           </div>
-          <p className="text-xs text-slate-500" aria-hidden="true">Audits, referrals & settings</p>
+          <p className="text-xs text-gray-500 dark:text-slate-500" aria-hidden="true">Audits, referrals &amp; settings</p>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
@@ -62,24 +66,24 @@ export function SlidePanel() {
           {/* Saved audits */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="h-3.5 w-3.5 text-cyan-400" />
-              <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Saved Audits</span>
+              <BookOpen className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
+              <span className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">Saved Audits</span>
             </div>
             <div className="space-y-2">
               {MOCK_AUDITS.map((audit) => (
                 <button
                   key={audit.id}
-                  className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/5 group"
-                  style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+                  className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5 group"
+                  style={{ border: "1px solid var(--card-border)" }}
                 >
                   <div>
-                    <p className="text-sm font-medium text-slate-200">{audit.date}</p>
-                    <p className="text-xs text-slate-500">{audit.tools} tools · saved ${audit.saving}/mo</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-slate-200">{audit.date}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-500">{audit.tools} tools · saved ${audit.saving}/mo</p>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-slate-600 group-hover:text-cyan-400 transition-colors" />
+                  <ChevronRight className="h-4 w-4 text-gray-400 dark:text-slate-600 group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors" />
                 </button>
               ))}
-              <button className="w-full text-xs text-slate-500 hover:text-cyan-400 transition-colors py-1 text-center">
+              <button className="w-full text-xs text-gray-500 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors py-1 text-center">
                 + New audit
               </button>
             </div>
@@ -88,15 +92,20 @@ export function SlidePanel() {
           {/* Referral */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Gift className="h-3.5 w-3.5 text-purple-400" />
-              <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">Referral Program</span>
+              <Gift className="h-3.5 w-3.5 text-purple-500 dark:text-purple-400" />
+              <span className="text-xs font-semibold text-purple-500 dark:text-purple-400 uppercase tracking-wider">Referral Program</span>
             </div>
-            <div className="rounded-xl p-4" style={{ background: "rgba(168,85,247,0.08)", border: "1px solid rgba(168,85,247,0.2)" }}>
-              <p className="text-sm text-slate-300 mb-3">
-                Earn <span className="font-bold text-purple-300">$20 credit</span> for every friend who upgrades.
+            <div
+              className="rounded-xl p-4"
+              style={{ background: "rgba(168,85,247,0.08)", border: "1px solid rgba(168,85,247,0.2)" }}
+            >
+              <p className="text-sm text-gray-700 dark:text-slate-300 mb-3">
+                Earn <span className="font-bold text-purple-600 dark:text-purple-300">$20 credit</span> for every friend who upgrades.
               </p>
-              <div className="flex items-center gap-2 rounded-lg px-3 py-2 mb-3 text-xs font-mono text-slate-400 truncate"
-                style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div
+                className="flex items-center gap-2 rounded-lg px-3 py-2 mb-3 text-xs font-mono text-gray-500 dark:text-slate-400 truncate"
+                style={{ background: "var(--stat-bar-bg)", border: "1px solid var(--card-border)" }}
+              >
                 spendwise.ai/ref/prakhu2026
               </div>
               <button
@@ -113,17 +122,25 @@ export function SlidePanel() {
           {/* Quick settings */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Settings className="h-3.5 w-3.5 text-slate-400" />
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Settings</span>
+              <Settings className="h-3.5 w-3.5 text-gray-400 dark:text-slate-400" />
+              <span className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">Settings</span>
             </div>
             <div className="space-y-1">
               {["Email notifications", "Auto-refresh prices", "Dark mode"].map((item) => (
-                <div key={item} className="flex items-center justify-between rounded-xl px-3 py-2.5"
-                  style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <span className="text-sm text-slate-300">{item}</span>
-                  <div className="h-5 w-9 rounded-full flex items-center px-0.5 cursor-pointer" style={{ background: item === "Dark mode" ? "rgba(6,182,212,0.6)" : "rgba(255,255,255,0.1)" }}>
-                    <div className="h-4 w-4 rounded-full bg-white shadow transition-transform"
-                      style={{ transform: item === "Dark mode" ? "translateX(16px)" : "translateX(0)" }} />
+                <div
+                  key={item}
+                  className="flex items-center justify-between rounded-xl px-3 py-2.5"
+                  style={{ border: "1px solid var(--card-border)" }}
+                >
+                  <span className="text-sm text-gray-700 dark:text-slate-300">{item}</span>
+                  <div
+                    className="h-5 w-9 rounded-full flex items-center px-0.5 cursor-pointer"
+                    style={{ background: item === "Dark mode" ? "rgba(6,182,212,0.6)" : "rgba(148,163,184,0.2)" }}
+                  >
+                    <div
+                      className="h-4 w-4 rounded-full bg-white shadow transition-transform"
+                      style={{ transform: item === "Dark mode" ? "translateX(16px)" : "translateX(0)" }}
+                    />
                   </div>
                 </div>
               ))}
@@ -132,8 +149,8 @@ export function SlidePanel() {
         </div>
 
         {/* Panel footer */}
-        <div className="px-6 py-4" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-          <p className="text-xs text-slate-600 text-center">SpendWiseAI · Made for founders</p>
+        <div className="px-6 py-4" style={{ borderTop: "1px solid var(--card-border)" }}>
+          <p className="text-xs text-gray-400 dark:text-slate-600 text-center">SpendWiseAI · Made for founders</p>
         </div>
       </SheetContent>
     </Sheet>

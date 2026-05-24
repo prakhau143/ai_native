@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generateAISummary } from "@/lib/generateSummary";
+import { sendSlackAuditAlert } from "@/lib/slackNotify";
 import type { AuditResult } from "@/lib/auditEngine";
 
 export async function POST(req: NextRequest) {
@@ -36,6 +37,14 @@ export async function POST(req: NextRequest) {
       console.error("Supabase error:", error.message);
       return NextResponse.json({ error: "Failed to save audit" }, { status: 500 });
     }
+
+    // Fire-and-forget Slack alert — never blocks the response
+    sendSlackAuditAlert({
+      email,
+      company: company ?? null,
+      result: enrichedResult,
+      auditId: data.id,
+    }).catch(() => {/* already logged inside helper */});
 
     return NextResponse.json({ id: data.id, publicId: data.public_id, aiSummary });
   } catch {

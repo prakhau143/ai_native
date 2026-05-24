@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -96,6 +96,152 @@ const tooltipStyle = {
 };
 
 // ─────────────────────────────────────────────────────────────
+// Infinite marquee sections (Stripe / Linear style)
+// ─────────────────────────────────────────────────────────────
+const TRUST_LOGOS = [
+  "OpenAI", "Anthropic", "Cursor", "Vercel", "Notion", "Zapier",
+  "Replit", "Midjourney", "ElevenLabs", "Runway", "HeyGen", "Perplexity",
+];
+
+const TOOL_MARQUEE_TOP = [
+  "OpenAI", "Claude", "Gemini", "Groq", "Cursor", "Windsurf",
+  "Perplexity", "Jasper", "Notion AI", "Copilot",
+];
+const TOOL_MARQUEE_BOTTOM = [
+  "Midjourney", "ElevenLabs", "Runway", "HeyGen", "Replit", "Zapier",
+  "Anthropic", "Stable Diffusion", "Synthesia", "Descript",
+];
+
+function MarqueeEdgeFade() {
+  return (
+    <>
+      <div
+        className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 sm:w-32"
+        style={{ background: "linear-gradient(to right, var(--background), transparent)" }}
+      />
+      <div
+        className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 sm:w-32"
+        style={{ background: "linear-gradient(to left, var(--background), transparent)" }}
+      />
+    </>
+  );
+}
+
+function MarqueeGroup({
+  id,
+  gapClass,
+  children,
+  hidden = false,
+}: {
+  id: string;
+  gapClass: string;
+  children: React.ReactNode;
+  hidden?: boolean;
+}) {
+  return (
+    <div className={`marquee-group ${gapClass}`} aria-hidden={hidden || undefined}>
+      {Children.map(children, (child, i) =>
+        isValidElement(child) ? cloneElement(child, { key: `${id}-${i}` }) : child,
+      )}
+    </div>
+  );
+}
+
+function InfiniteMarquee({
+  duration,
+  reverse = false,
+  gapClass = "gap-6",
+  children,
+}: {
+  duration: number;
+  reverse?: boolean;
+  gapClass?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="marquee-viewport relative w-full overflow-hidden"
+      style={{ ["--marquee-duration" as string]: `${duration}s` }}
+    >
+      <MarqueeEdgeFade />
+      <div className={reverse ? "marquee-track--reverse" : "marquee-track"}>
+        <MarqueeGroup id="a" gapClass={gapClass}>{children}</MarqueeGroup>
+        <MarqueeGroup id="b" gapClass={gapClass} hidden>{children}</MarqueeGroup>
+      </div>
+    </div>
+  );
+}
+
+function LogoSlider() {
+  return (
+    <section
+      className="relative overflow-hidden py-10"
+      style={{ borderTop: "1px solid var(--card-border)", borderBottom: "1px solid var(--card-border)" }}
+    >
+      <p
+        className="mb-6 text-center text-sm font-medium uppercase tracking-[0.3em] text-muted"
+      >
+        Trusted by AI-first startups, agencies &amp; SaaS teams
+      </p>
+      <InfiniteMarquee duration={25} gapClass="gap-12 px-4 sm:gap-16 sm:px-8">
+        {TRUST_LOGOS.map((logo) => (
+          <span
+            key={logo}
+            className="whitespace-nowrap text-2xl font-bold transition-colors duration-300 select-none sm:text-3xl hover:text-cyan-400 text-soft"
+          >
+            {logo}
+          </span>
+        ))}
+      </InfiniteMarquee>
+    </section>
+  );
+}
+
+function ToolMarqueeCard({ name }: { name: string }) {
+  return (
+    <div
+      className="min-w-[260px] shrink-0 rounded-2xl border px-8 py-7 text-center text-lg font-semibold transition-all duration-300 sm:min-w-[320px] sm:px-10 sm:py-8 sm:text-xl hover:scale-[1.02] hover:border-cyan-400/40 hover:bg-cyan-500/10"
+      style={{
+        ...glassCard,
+        color: "var(--foreground)",
+        opacity: 0.85,
+      }}
+    >
+      {name}
+    </div>
+  );
+}
+
+function ToolMarquee() {
+  return (
+    <section className="relative -mx-4 overflow-hidden py-16 sm:-mx-6 sm:py-24">
+      <div className="mb-12 text-center sm:mb-14">
+        <h2
+          className="text-4xl font-black tracking-tight sm:text-5xl"
+          style={{ color: "var(--foreground)" }}
+        >
+          Integrated with 35+ AI Tools
+        </h2>
+      </div>
+
+      <div className="mb-6">
+        <InfiniteMarquee duration={28} gapClass="gap-4 px-2 sm:gap-6 sm:px-4">
+          {TOOL_MARQUEE_TOP.map((tool) => (
+            <ToolMarqueeCard key={`top-${tool}`} name={tool} />
+          ))}
+        </InfiniteMarquee>
+      </div>
+
+      <InfiniteMarquee duration={22} reverse gapClass="gap-4 px-2 sm:gap-6 sm:px-4">
+        {TOOL_MARQUEE_BOTTOM.map((tool) => (
+          <ToolMarqueeCard key={`bottom-${tool}`} name={tool} />
+        ))}
+      </InfiniteMarquee>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // Section wrapper (fade-up on scroll)
 // ─────────────────────────────────────────────────────────────
 function Section({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) {
@@ -159,23 +305,17 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
             2,800+ startups already optimised
           </div>
 
-          <h2 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-extrabold"
-            style={{ background: "linear-gradient(135deg, #ffffff 10%, #67e8f9 50%, #c084fc 90%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+          <h2 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-extrabold gradient-text-hero">
             Ready to stop overspending on AI?
           </h2>
-          <p className="mt-4 text-base max-w-xl mx-auto" style={{ color: "var(--foreground)", opacity: 0.55 }}>
+          <p className="mt-4 text-base max-w-xl mx-auto text-soft">
             Join 2,800+ startups that have already optimised their AI costs.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={onAuditClick}
-              className="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95"
-              style={{
-                background: "rgba(255,255,255,0.92)",
-                color: "#3730a3",
-                boxShadow: "0 4px 24px rgba(255,255,255,0.2)",
-              }}
+              className="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold transition-all hover:scale-105 active:scale-95 btn-primary"
             >
               Start Free Audit <ArrowRight className="h-4 w-4" />
             </button>
@@ -183,12 +323,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               href="https://calendly.com/mittalprakhar504/30min"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.22)",
-                backdropFilter: "blur(12px)",
-              }}
+              className="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold transition-all hover:scale-105 active:scale-95 btn-secondary"
             >
               Start Pro Trial <ChevronRight className="h-4 w-4" />
             </a>
@@ -197,25 +332,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
       </Section>
 
       {/* ── 2. TRUSTED COMPANIES MARQUEE ─────────────────────────────── */}
-      <Section>
-        <p className="text-center text-xs uppercase tracking-widest mb-6 font-medium" style={{ color: "var(--foreground)", opacity: 0.35 }}>
-          Trusted by AI-first startups, agencies &amp; SaaS teams
-        </p>
-        <div className="relative overflow-hidden" style={{ maskImage: "linear-gradient(90deg, transparent, black 12%, black 88%, transparent)" }}>
-          <div className="animate-marquee flex gap-14 items-center">
-            {["OpenAI", "Anthropic", "Cursor", "Vercel", "Notion", "Zapier", "Replit", "Midjourney", "ElevenLabs", "Runway", "HeyGen", "Perplexity",
-              "OpenAI", "Anthropic", "Cursor", "Vercel", "Notion", "Zapier", "Replit", "Midjourney", "ElevenLabs", "Runway", "HeyGen", "Perplexity"].map((logo, i) => (
-              <span
-                key={i}
-                className="text-lg font-bold whitespace-nowrap select-none"
-                style={{ color: "var(--foreground)", opacity: 0.22 }}
-              >
-                {logo}
-              </span>
-            ))}
-          </div>
-        </div>
-      </Section>
+      <LogoSlider />
 
       {/* ── 3. LIVE STATS (animated counters) ────────────────────────── */}
       <Section>
@@ -236,7 +353,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               <div className="text-3xl font-extrabold mb-1" style={{ color: s.color }}>
                 <CountUp target={s.value} suffix={s.suffix} decimals={s.decimals} />
               </div>
-              <div className="text-xs" style={{ color: "var(--foreground)", opacity: 0.45 }}>{s.label}</div>
+              <div className="text-xs" style={{ color: "var(--foreground-muted)" }}>{s.label}</div>
             </motion.div>
           ))}
         </div>
@@ -261,21 +378,15 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               style={{ background: "radial-gradient(circle, rgba(6,182,212,0.2) 0%, transparent 70%)", filter: "blur(56px)" }} />
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-extrabold"
-            style={{ background: "linear-gradient(135deg, #ffffff 10%, #c084fc 50%, #67e8f9 90%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+          <h2 className="text-3xl sm:text-4xl font-extrabold gradient-text-hero">
             See how YOUR stack compares
           </h2>
-          <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: "var(--foreground)", opacity: 0.55 }}>
+          <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: "var(--foreground-soft)" }}>
             Get a free personalised audit powered by Groq AI — results in under 2 minutes.
           </p>
           <button
             onClick={onAuditClick}
-            className="mt-8 inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95"
-            style={{
-              background: "rgba(255,255,255,0.9)",
-              color: "#4c1d95",
-              boxShadow: "0 4px 24px rgba(255,255,255,0.18)",
-            }}
+            className="mt-8 inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-bold transition-all hover:scale-105 active:scale-95 btn-primary"
           >
             Run Free Audit <ArrowRight className="h-4 w-4" />
           </button>
@@ -286,7 +397,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
       <Section id="features">
         <div className="text-center mb-10">
           <h2 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: "var(--foreground)" }}>Why SpendWise AI?</h2>
-          <p className="text-sm" style={{ color: "var(--foreground)", opacity: 0.45 }}>Everything you need to make your AI budget go further</p>
+          <p className="text-sm" style={{ color: "var(--foreground-muted)" }}>Everything you need to make your AI budget go further</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
@@ -308,7 +419,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
                 {card.icon}
               </div>
               <h3 className="font-bold mb-2" style={{ color: "var(--foreground)" }}>{card.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)", opacity: 0.5 }}>{card.desc}</p>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--foreground-soft)" }}>{card.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -320,7 +431,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
           <h2 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: "var(--foreground)" }}>
             One Dashboard, Total Control
           </h2>
-          <p className="text-sm" style={{ color: "var(--foreground)", opacity: 0.45 }}>
+          <p className="text-sm" style={{ color: "var(--foreground-muted)" }}>
             Live token tracking · Team analytics · Cost forecasting · Budget alerts
           </p>
         </div>
@@ -340,7 +451,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
                 <TrendingUp className="h-4 w-4" style={{ color: "#67e8f9" }} />
                 <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Monthly AI Cost Trend</span>
               </div>
-              <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: "var(--foreground)", opacity: 0.5 }}>
+              <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: "var(--foreground-soft)" }}>
                 <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-full bg-red-400" />Current</span>
                 <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />Optimised</span>
               </div>
@@ -395,7 +506,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="h-4 w-4" style={{ color: "#f59e0b" }} />
               <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Savings by Optimisation Type ($)</span>
-              <div className="ml-auto flex items-center gap-4 text-xs" style={{ color: "var(--foreground)", opacity: 0.5 }}>
+              <div className="ml-auto flex items-center gap-4 text-xs" style={{ color: "var(--foreground-soft)" }}>
                 <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />Realised</span>
                 <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-full bg-amber-400" />Untapped</span>
               </div>
@@ -430,26 +541,8 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
         </div>
       </Section>
 
-      {/* ── 7. AI TOOL ECOSYSTEM ──────────────────────────────────────── */}
-      <Section>
-        <h2 className="text-3xl font-extrabold text-center mb-10" style={{ color: "var(--foreground)" }}>
-          Integrated with 35+ AI Tools
-        </h2>
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-          {["OpenAI", "Claude", "Gemini", "Groq", "Cursor", "Windsurf", "Copilot", "Midjourney", "ElevenLabs", "Runway", "Jasper", "Perplexity"].map((tool) => (
-            <motion.div
-              key={tool}
-              whileHover={{ scale: 1.04 }}
-              className="rounded-xl p-3 text-center text-xs font-semibold cursor-default transition-all"
-              style={{ ...glassCard }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(6,182,212,0.35)")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--card-border)")}
-            >
-              <span style={{ color: "var(--foreground)", opacity: 0.75 }}>{tool}</span>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
+      {/* ── 7. AI TOOL ECOSYSTEM (dual-row marquee) ───────────────────── */}
+      <ToolMarquee />
 
       {/* ── 8. BEFORE VS AFTER ───────────────────────────────────────── */}
       <Section>
@@ -475,7 +568,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
                 ].map((row) => (
                   <div key={row.before} className="flex items-center justify-between py-2.5"
                     style={{ borderBottom: "1px solid var(--card-border)" }}>
-                    <span className="text-sm" style={{ color: "var(--foreground)", opacity: 0.5 }}>{row.before}</span>
+                    <span className="text-sm" style={{ color: "var(--foreground-soft)" }}>{row.before}</span>
                     <span className="text-sm font-semibold" style={{ color: "#34d399" }}>→ {row.after}</span>
                   </div>
                 ))}
@@ -484,8 +577,8 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
             <div className="text-center">
               <div className="rounded-2xl p-8" style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)" }}>
                 <div className="text-6xl font-black" style={{ color: "#34d399" }}>-57%</div>
-                <div className="text-sm mt-2" style={{ color: "var(--foreground)", opacity: 0.5 }}>average cost reduction</div>
-                <div className="mt-4 text-xs" style={{ color: "var(--foreground)", opacity: 0.35 }}>across 2,800+ audited teams</div>
+                <div className="text-sm mt-2" style={{ color: "var(--foreground-soft)" }}>average cost reduction</div>
+                <div className="mt-4 text-xs" style={{ color: "var(--foreground-muted)" }}>across 2,800+ audited teams</div>
               </div>
             </div>
           </div>
@@ -509,7 +602,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               style={glassCard}
             >
               <Check className="h-4 w-4 shrink-0" style={{ color: "#34d399" }} />
-              <span className="text-sm" style={{ color: "var(--foreground)", opacity: 0.75 }}>{feat}</span>
+              <span className="text-sm" style={{ color: "var(--foreground-soft)" }}>{feat}</span>
             </motion.div>
           ))}
         </div>
@@ -536,7 +629,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               <div className="flex mb-3">
                 {[...Array(5)].map((_, j) => <Star key={j} className="h-3.5 w-3.5 fill-current" style={{ color: t.color }} />)}
               </div>
-              <p className="text-sm italic leading-relaxed mb-5" style={{ color: "var(--foreground)", opacity: 0.7 }}>
+              <p className="text-sm italic leading-relaxed mb-5" style={{ color: "var(--foreground-soft)" }}>
                 &ldquo;{t.quote}&rdquo;
               </p>
               <div className="flex items-center gap-3">
@@ -546,7 +639,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
                 </div>
                 <div>
                   <div className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{t.author}</div>
-                  <div className="text-xs" style={{ color: "var(--foreground)", opacity: 0.4 }}>{t.role}</div>
+                  <div className="text-xs" style={{ color: "var(--foreground-muted)" }}>{t.role}</div>
                 </div>
               </div>
             </motion.div>
@@ -572,7 +665,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
             >
               <div className="text-3xl mb-3">{a.icon}</div>
               <div className="font-bold mb-1" style={{ color: a.color }}>{a.label}</div>
-              <div className="text-xs" style={{ color: "var(--foreground)", opacity: 0.45 }}>{a.desc}</div>
+              <div className="text-xs" style={{ color: "var(--foreground-muted)" }}>{a.desc}</div>
             </motion.div>
           ))}
         </div>
@@ -582,7 +675,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
       <Section>
         <div className="text-center mb-8">
           <h2 className="text-3xl font-extrabold mb-2" style={{ color: "var(--foreground)" }}>Enterprise-Grade Security</h2>
-          <p className="text-sm" style={{ color: "var(--foreground)", opacity: 0.45 }}>Your data never leaves your control</p>
+          <p className="text-sm" style={{ color: "var(--foreground-muted)" }}>Your data never leaves your control</p>
         </div>
         <div className="flex flex-wrap justify-center gap-4">
           {[
@@ -617,7 +710,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
           <h2 className="text-2xl font-extrabold text-center mb-2" style={{ color: "var(--foreground)" }}>
             Estimate Your Savings
           </h2>
-          <p className="text-sm text-center mb-8" style={{ color: "var(--foreground)", opacity: 0.45 }}>
+          <p className="text-sm text-center mb-8" style={{ color: "var(--foreground-muted)" }}>
             Adjust the sliders to see your potential annual savings
           </p>
 
@@ -650,13 +743,13 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               className="rounded-2xl p-6 text-center"
               style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)" }}
             >
-              <div className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--foreground)", opacity: 0.4 }}>
+              <div className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--foreground-muted)" }}>
                 Potential yearly savings
               </div>
               <div className="text-5xl font-black" style={{ color: "#34d399" }}>
                 ${roiSavings.toLocaleString()}
               </div>
-              <div className="text-xs mt-2" style={{ color: "var(--foreground)", opacity: 0.35 }}>
+              <div className="text-xs mt-2" style={{ color: "var(--foreground-muted)" }}>
                 Based on 26% avg savings across similar teams
               </div>
             </div>
@@ -692,11 +785,10 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               style={{ background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)", filter: "blur(60px)" }} />
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4"
-            style={{ background: "linear-gradient(135deg, #ffffff 0%, #67e8f9 50%, #c084fc 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 gradient-text-hero">
             Stop Overspending on AI.<br />Start Scaling Smarter.
           </h2>
-          <p className="text-base mb-8 max-w-md mx-auto" style={{ color: "var(--foreground)", opacity: 0.5 }}>
+          <p className="text-base mb-8 max-w-md mx-auto" style={{ color: "var(--foreground-soft)" }}>
             Get your AI cost audit in under 2 minutes. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -715,7 +807,7 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
               style={{
                 border: "1px solid rgba(255,255,255,0.18)",
                 backdropFilter: "blur(12px)",
-                background: "rgba(255,255,255,0.05)",
+                background: "rgba(91, 89, 89, 0.5)",
               }}
             >
               Book Free Trial →

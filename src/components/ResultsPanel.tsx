@@ -10,6 +10,8 @@ import type { AuditResult, Recommendation } from "@/lib/auditEngine";
 import { SpendTrendChart } from "./SpendTrendChart";
 import { WasteScoreMeter } from "./WasteScoreMeter";
 import { SavingsProjectionChart } from "./SavingsProjectionChart";
+import { AICommandCenter } from "./AICommandCenter";
+import { StackAdvisor } from "./StackAdvisor";
 
 // Re-export for consumers
 export type { AuditResult, Recommendation };
@@ -154,7 +156,7 @@ function RecommendationCard({ rec, index }: { rec: Recommendation; index: number
                 <span className="text-xs opacity-40" style={{ color: "var(--foreground)" }}>
                   AI confidence
                 </span>
-                <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", maxWidth: 80 }}>
+                <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "var(--stat-bar-bg)", maxWidth: 80 }}>
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -200,7 +202,7 @@ function RecommendationCard({ rec, index }: { rec: Recommendation; index: number
         {/* Reason */}
         <div
           className="mt-3 pt-3 flex items-start gap-2 text-xs"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "var(--foreground)", opacity: 0.6 }}
+          style={{ borderTop: "1px solid var(--card-border)", color: "var(--foreground)", opacity: 0.6 }}
         >
           <Info className="h-3.5 w-3.5 mt-0.5 shrink-0 opacity-60" />
           <span className="leading-relaxed">{rec.reason}</span>
@@ -374,13 +376,19 @@ export function ResultsPanel({ result, onReset, shareUrl }: ResultsPanelProps) {
 
         {/* Savings projection */}
         {result.totalSaving > 0 && (
-          <div className="mb-8">
+          <div className="mb-6">
             <SavingsProjectionChart
               monthlySaving={result.totalSaving}
               annualSaving={result.annualSaving}
             />
           </div>
         )}
+
+        {/* ── AI FinOps Command Center ──────────────────────────────────────── */}
+        <AICommandCenter result={result} />
+
+        {/* ── Stack Advisor ─────────────────────────────────────────────────── */}
+        <StackAdvisor result={result} />
 
         {/* ── AI Summary card ─────────────────────────────────────────────── */}
         <div
@@ -436,7 +444,7 @@ export function ResultsPanel({ result, onReset, shareUrl }: ResultsPanelProps) {
                       <span className="font-medium">{cat.category}</span>
                       <span className="opacity-60">${cat.spend.toLocaleString()}/mo ({pct}%)</span>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--stat-bar-bg)" }}>
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{ width: `${pct}%`, background: cat.color }}

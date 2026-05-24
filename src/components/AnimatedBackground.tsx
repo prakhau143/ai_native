@@ -15,10 +15,31 @@ type Particle = {
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    const glow = glowRef.current;
+    if (!glow) return;
+
+    const onMove = (e: MouseEvent) => {
+      glow.style.left = `${e.clientX}px`;
+      glow.style.top = `${e.clientY}px`;
+      glow.style.opacity = "1";
+    };
+
+    const onLeave = () => { glow.style.opacity = "0"; };
+
+    window.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseleave", onLeave);
+    };
+  }, [mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -32,7 +53,7 @@ export function AnimatedBackground() {
 
     const COLORS = isDark
       ? ["rgba(6,182,212,", "rgba(168,85,247,", "rgba(99,102,241,"]
-      : ["rgba(8,145,178,", "rgba(147,51,234,", "rgba(79,70,229,"];
+      : ["rgba(8,145,178,", "rgba(124,58,237,", "rgba(79,70,229,"];
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -41,8 +62,7 @@ export function AnimatedBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Create particles
-    const particles: Particle[] = Array.from({ length: 60 }, () => ({
+    const particles: Particle[] = Array.from({ length: isDark ? 60 : 40 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       vx: (Math.random() - 0.5) * 0.4,
@@ -55,12 +75,9 @@ export function AnimatedBackground() {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Update + draw particles
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
-
-        // Bounce off edges
         if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
@@ -70,7 +87,6 @@ export function AnimatedBackground() {
         ctx.fill();
       });
 
-      // Draw connections between nearby particles
       const connectionDist = 120;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -105,11 +121,34 @@ export function AnimatedBackground() {
 
   if (!mounted) return null;
 
+  const isDark = resolvedTheme === "dark";
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0, opacity: resolvedTheme === "dark" ? 1 : 0.6 }}
-    />
+    <>
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 futuristic-grid opacity-[0.07] dark:opacity-[0.05]" />
+
+        <div
+          className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full blur-[120px] animate-float-slow"
+          style={{ background: isDark ? "rgba(6,182,212,0.2)" : "rgba(6,182,212,0.14)" }}
+        />
+        <div
+          className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] animate-float-reverse"
+          style={{ background: isDark ? "rgba(168,85,247,0.2)" : "rgba(168,85,247,0.12)" }}
+        />
+        <div
+          className="absolute top-1/2 left-1/2 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[160px]"
+          style={{ background: isDark ? "rgba(99,102,241,0.1)" : "rgba(99,102,241,0.06)" }}
+        />
+      </div>
+
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 pointer-events-none"
+        style={{ zIndex: 0, opacity: isDark ? 1 : 0.55 }}
+      />
+
+      <div ref={glowRef} className="mouse-glow opacity-0" />
+    </>
   );
 }
