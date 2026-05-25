@@ -8,12 +8,22 @@ type SendEmailBody = {
   publicId: string;
   savingsTier: "optimal" | "low" | "medium" | "high";
   aiSummary?: string;
+  // Premium template fields
+  toolsCount?: number;
+  efficiencyScore?: number;
+  wasteScore?: number;
+  downgradeSavings?: number;
+  apiSavings?: number;
+  seatSavings?: number;
 };
 
 export async function POST(req: NextRequest) {
   try {
     const body: SendEmailBody = await req.json();
-    const { email, savings, annualSaving, publicId, savingsTier, aiSummary } = body;
+    const {
+      email, savings, annualSaving, publicId, savingsTier, aiSummary,
+      toolsCount, efficiencyScore, wasteScore, downgradeSavings, apiSavings, seatSavings,
+    } = body;
 
     if (!email || !publicId) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -26,6 +36,12 @@ export async function POST(req: NextRequest) {
       publicId,
       savingsTier,
       aiSummary,
+      toolsCount,
+      efficiencyScore,
+      wasteScore,
+      downgradeSavings,
+      apiSavings,
+      seatSavings,
     });
 
     return NextResponse.json(result);

@@ -81,6 +81,17 @@ export default function HomePage() {
         setResult((prev) => prev ? { ...prev, summary: aiSummary } : prev);
       }
 
+      // Compute savings breakdown by category for premium email template
+      const downgradeSavings = result.recommendations
+        .filter((r) => r.suggestedAction === "downgrade")
+        .reduce((sum, r) => sum + r.saving, 0);
+      const apiSavings = result.recommendations
+        .filter((r) => r.suggestedAction === "api-switch")
+        .reduce((sum, r) => sum + r.saving, 0);
+      const seatSavings = result.recommendations
+        .filter((r) => ["consolidate", "switch", "cancel"].includes(r.suggestedAction))
+        .reduce((sum, r) => sum + r.saving, 0);
+
       // Fire-and-forget confirmation email (includes AI summary if available)
       fetch("/api/send-email", {
         method: "POST",
@@ -92,6 +103,12 @@ export default function HomePage() {
           publicId: publicId ?? "unknown",
           savingsTier: result.savingsTier,
           aiSummary: aiSummary ?? undefined,
+          toolsCount: pendingTools.length,
+          efficiencyScore: result.efficiencyScore,
+          wasteScore: result.wasteScore,
+          downgradeSavings,
+          apiSavings,
+          seatSavings,
         }),
       }).catch(() => {}); // non-blocking
 
