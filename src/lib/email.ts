@@ -49,33 +49,37 @@ function buildHtml({
   // Bar widths — proportional to share of total breakdown savings
   const total = downgradeSavings + apiSavings + seatSavings;
   const pct = (v: number) => (total > 0 ? Math.round((v / total) * 100) : 0);
-  const downgradeW = pct(downgradeSavings);
-  const apiW = pct(apiSavings);
-  const seatW = pct(seatSavings);
 
-  // Bar fill label text
-  const barLabel = (v: number) => (v > 0 ? `$${v.toLocaleString()}` : "");
+  // Individual bars — only rendered when category has savings
+  const makeBar = (emoji: string, label: string, amount: number, width: number) =>
+    amount > 0
+      ? `<div class="bar-item">
+          <div class="bar-label"><span>${emoji} ${label}</span><span>$${amount.toLocaleString()}/mo</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:${width}%">$${amount.toLocaleString()}</div></div>
+        </div>`
+      : "";
+
+  const downgradeBar = makeBar("🔻", "Tool Downgrades", downgradeSavings, pct(downgradeSavings));
+  const apiBar      = makeBar("⚡", "API Optimization",  apiSavings,      pct(apiSavings));
+  const seatBar     = makeBar("👥", "Seat Reduction",    seatSavings,     pct(seatSavings));
 
   // Savings section — different for zero vs positive savings
   const savingsSection =
     savings > 0
-      ? `
-      <div class="savings-card">
-        <div class="savings-label">💰 MONTHLY SAVINGS FOUND</div>
-        <div class="savings-amount">$${savings.toLocaleString()}<small>/mo</small></div>
-        <div class="savings-year">That's $${annualSaving.toLocaleString()} per year</div>
-      </div>`
-      : `
-      <div class="savings-card" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;">
-        <div class="savings-label" style="color:#065f46;">✅ STACK ALREADY OPTIMISED</div>
-        <div style="font-size:32px;font-weight:800;color:#059669;margin:12px 0 4px;">You're spending well!</div>
-        <div class="savings-year">No major waste found in your current AI stack.</div>
-      </div>`;
+      ? `<div class="savings-card">
+          <div class="savings-label">💰 MONTHLY SAVINGS FOUND</div>
+          <div class="savings-amount">$${savings.toLocaleString()}<small>/mo</small></div>
+          <div class="savings-year">🎯 That's <strong>$${annualSaving.toLocaleString()} per year</strong></div>
+        </div>`
+      : `<div class="savings-card" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;">
+          <div class="savings-label" style="color:#065f46;">✅ STACK ALREADY OPTIMISED</div>
+          <div style="font-size:36px;font-weight:800;color:#059669;margin:12px 0 4px;">You're spending well!</div>
+          <div class="savings-year">No major waste found in your current AI stack.</div>
+        </div>`;
 
   // Credex callout for high savings
   const credexSection = isHighSavings
-    ? `
-      <div style="background:#fffbeb;border-radius:20px;padding:20px;margin:20px 0;border:1px solid #fcd34d;">
+    ? `<div style="background:#fffbeb;border-radius:20px;padding:20px;margin:20px 0;border:1px solid #fcd34d;">
         <div style="font-size:16px;font-weight:700;color:#92400e;margin-bottom:8px;">🚀 We'll reach out soon</div>
         <div style="color:#78350f;font-size:14px;line-height:1.6;">
           Your savings potential (<strong>$${savings.toLocaleString()}/mo</strong>) puts you in our high-value tier.
@@ -88,7 +92,7 @@ function buildHtml({
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Your AI Spend Report – SpendWiseAI</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -97,106 +101,140 @@ function buildHtml({
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background: linear-gradient(135deg, #0f0c29, #1a1a3e, #24243e);
       margin: 0; padding: 40px 20px;
+      -webkit-font-smoothing: antialiased;
     }
     .email-container {
-      max-width: 600px; margin: 0 auto; background: #ffffff;
+      max-width: 600px; width: 100%; margin: 0 auto; background: #ffffff;
       border-radius: 32px; overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
     }
     .header {
-      background: linear-gradient(135deg, #0f172a, #1e1b4b);
-      padding: 32px 28px; text-align: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      padding: 36px 28px; text-align: center;
       border-bottom: 3px solid #06b6d4;
     }
     .logo {
-      font-size: 28px; font-weight: 800;
-      background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+      font-size: 32px; font-weight: 800;
+      background: linear-gradient(135deg, #06b6d4, #a855f7, #ec4899);
       -webkit-background-clip: text; background-clip: text;
       color: transparent; letter-spacing: -0.5px;
     }
-    .logo span { background: none; color: #ffffff; font-weight: 600; }
     .tagline { color: #94a3b8; font-size: 13px; margin-top: 8px; letter-spacing: 0.5px; }
     .content { padding: 32px 28px; background: #ffffff; }
-    .greeting h2 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
-    .greeting p { color: #64748b; font-size: 15px; line-height: 1.5; }
+    .greeting { margin-bottom: 24px; }
+    .greeting h2 { font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.3px; }
+    .greeting p { color: #475569; font-size: 15px; line-height: 1.5; }
     .savings-card {
-      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-      border-radius: 24px; padding: 24px; text-align: center;
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border-radius: 28px; padding: 28px 20px; text-align: center;
       margin: 24px 0; border: 1px solid #a7f3d0;
     }
-    .savings-label { color: #065f46; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-    .savings-amount { font-size: 48px; font-weight: 800; color: #059669; margin: 12px 0 4px; line-height: 1; }
-    .savings-amount small { font-size: 20px; font-weight: 500; }
-    .savings-year { font-size: 18px; font-weight: 600; color: #047857; margin-top: 8px; }
-    .metrics-row { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+    .savings-label { color: #065f46; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .savings-amount { font-size: 56px; font-weight: 800; color: #059669; margin: 12px 0 4px; line-height: 1; }
+    .savings-amount small { font-size: 22px; font-weight: 600; }
+    .savings-year { font-size: 18px; font-weight: 700; color: #047857; margin-top: 8px; }
+    /* 3 equal columns — never wrap on mobile */
+    .metrics-row { display: flex; gap: 16px; margin: 28px 0; flex-wrap: nowrap; }
     .metric-card {
-      flex: 1; background: #f8fafc; border-radius: 20px;
-      padding: 16px; text-align: center; border: 1px solid #e2e8f0;
+      flex: 1; background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border-radius: 20px; padding: 20px 12px; text-align: center; border: 1px solid #e2e8f0;
     }
-    .metric-value { font-size: 28px; font-weight: 800; color: #0f172a; }
-    .metric-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .metric-value {
+      font-size: 32px; font-weight: 800;
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1.2;
+    }
+    .metric-label { font-size: 12px; font-weight: 500; color: #64748b; margin-top: 8px; letter-spacing: 0.3px; }
     .analysis-box {
-      background: #f1f5f9; border-radius: 20px; padding: 20px;
-      margin: 20px 0; border-left: 4px solid #06b6d4;
+      background: #f1f5f9; border-radius: 24px; padding: 24px;
+      margin: 24px 0; border-left: 4px solid #06b6d4;
     }
     .analysis-title { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
-    .analysis-text { color: #334155; font-size: 14px; line-height: 1.6; }
-    .graph-section { margin: 24px 0; }
-    .graph-title { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
-    .bar-item { margin-bottom: 12px; }
-    .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: #475569; margin-bottom: 4px; }
-    .bar-bg { background: #e2e8f0; border-radius: 10px; height: 32px; overflow: hidden; }
+    .analysis-text { color: #334155; font-size: 14px; line-height: 1.7; }
+    .graph-section { margin: 28px 0; }
+    .graph-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
+    .bar-item { margin-bottom: 16px; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; }
+    .bar-bg { background: #e2e8f0; border-radius: 12px; height: 40px; overflow: hidden; }
     .bar-fill {
       background: linear-gradient(90deg, #06b6d4, #8b5cf6); height: 100%;
-      border-radius: 10px; display: flex; align-items: center;
-      justify-content: flex-end; padding-right: 10px;
-      color: white; font-size: 12px; font-weight: 600; min-width: 8px;
+      border-radius: 12px; display: flex; align-items: center;
+      justify-content: flex-end; padding-right: 12px;
+      color: white; font-size: 13px; font-weight: 700;
     }
-    .services-section { margin: 28px 0; }
-    .services-title { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px; text-align: center; }
+    .services-section { margin: 32px 0; }
+    .services-title { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 20px; text-align: center; }
     .services-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
     .service-chip {
-      background: #f1f5f9; padding: 8px 16px; border-radius: 40px;
-      font-size: 12px; font-weight: 500; color: #1e293b;
-      display: flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      padding: 10px 18px; border-radius: 40px;
+      font-size: 13px; font-weight: 500; color: #1e293b;
+      display: inline-flex; align-items: center; gap: 8px; border: 1px solid #e2e8f0;
     }
-    .service-chip .dot { width: 6px; height: 6px; background: #06b6d4; border-radius: 50%; }
-    .cta-buttons { display: flex; gap: 16px; margin: 28px 0 20px; flex-wrap: wrap; }
+    .service-chip .dot {
+      width: 8px; height: 8px;
+      background: linear-gradient(135deg, #06b6d4, #8b5cf6); border-radius: 50%;
+    }
+    .cta-buttons { display: flex; gap: 16px; margin: 32px 0 20px; flex-wrap: wrap; }
     .btn-primary {
       flex: 1; background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-      color: white; text-align: center; padding: 14px 24px; border-radius: 40px;
-      text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;
+      color: white; text-align: center; padding: 14px 20px; border-radius: 50px;
+      text-decoration: none; font-weight: 700; font-size: 14px; display: inline-block;
+      box-shadow: 0 4px 12px rgba(6,182,212,0.25);
     }
     .btn-secondary {
-      flex: 1; background: #f1f5f9; color: #1e293b; text-align: center;
-      padding: 14px 24px; border-radius: 40px; text-decoration: none;
-      font-weight: 600; font-size: 14px; border: 1px solid #e2e8f0;
+      flex: 1; background: #ffffff; color: #1e293b; text-align: center;
+      padding: 14px 20px; border-radius: 50px; text-decoration: none;
+      font-weight: 700; font-size: 14px; border: 2px solid #e2e8f0; display: inline-block;
+    }
+    .privacy-note {
+      text-align: center; font-size: 12px; color: #64748b;
+      margin-top: 20px; padding: 12px;
+      background: #f8fafc; border-radius: 16px;
     }
     .footer {
-      background: #f8fafc; padding: 24px 28px; text-align: center;
+      background: #f8fafc; padding: 28px 28px 24px; text-align: center;
       border-top: 1px solid #e2e8f0;
     }
-    .footer-text { color: #94a3b8; font-size: 11px; line-height: 1.5; }
+    .footer-text { color: #94a3b8; font-size: 11px; line-height: 1.6; }
     .footer a { color: #06b6d4; text-decoration: none; }
     hr { margin: 16px 0; border: none; border-top: 1px solid #e2e8f0; }
-    @media (max-width: 500px) {
-      .metrics-row { flex-direction: column; }
-      .cta-buttons { flex-direction: column; }
+    @media (max-width: 550px) {
+      body { padding: 20px 12px; }
       .content { padding: 24px 20px; }
+      .header { padding: 28px 20px; }
+      .logo { font-size: 26px; }
+      .greeting h2 { font-size: 22px; }
+      .savings-amount { font-size: 44px; }
+      .savings-amount small { font-size: 18px; }
+      /* Keep 3 columns on mobile — just shrink padding */
+      .metrics-row { gap: 12px; flex-wrap: nowrap; }
+      .metric-card { padding: 14px 8px; }
+      .metric-value { font-size: 24px; }
+      .metric-label { font-size: 10px; }
+      .cta-buttons { flex-direction: column; gap: 12px; }
+      .btn-primary, .btn-secondary { width: 100%; }
+      .services-grid { gap: 8px; }
+      .service-chip { font-size: 11px; padding: 8px 14px; }
+    }
+    @media (max-width: 400px) {
+      .metric-value { font-size: 20px; }
+      .metric-label { font-size: 9px; }
+      .metrics-row { gap: 8px; }
     }
   </style>
 </head>
 <body>
   <div class="email-container">
     <div class="header">
-      <div class="logo">✨ SpendWise<span>AI</span></div>
+      <div class="logo">✨ SpendWise<span style="background:none;color:white;">AI</span></div>
       <div class="tagline">AI Cost Intelligence Platform</div>
     </div>
 
     <div class="content">
       <div class="greeting">
         <h2>Your AI Spend Report</h2>
-        <p>Here's your personalized analysis — we found <strong>real savings opportunities</strong> in your AI stack.</p>
+        <p>Here's your personalized analysis — we found <strong style="color:#059669;">real savings opportunities</strong> in your AI stack.</p>
       </div>
 
       ${savingsSection}
@@ -221,26 +259,13 @@ function buildHtml({
         <div class="analysis-text">${summaryText}</div>
       </div>
 
-      ${
-        total > 0
-          ? `
+      ${total > 0 ? `
       <div class="graph-section">
         <div class="graph-title">📊 Savings Breakdown by Opportunity</div>
-        <div class="bar-item">
-          <div class="bar-label"><span>Tool Downgrades</span><span>$${downgradeSavings.toLocaleString()}/mo</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:${downgradeW}%">${barLabel(downgradeSavings)}</div></div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-label"><span>API Optimization</span><span>$${apiSavings.toLocaleString()}/mo</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:${apiW}%">${barLabel(apiSavings)}</div></div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-label"><span>Plan Consolidation</span><span>$${seatSavings.toLocaleString()}/mo</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:${seatW}%">${barLabel(seatSavings)}</div></div>
-        </div>
-      </div>`
-          : ""
-      }
+        ${downgradeBar}
+        ${apiBar}
+        ${seatBar}
+      </div>` : ""}
 
       ${credexSection}
 
@@ -253,26 +278,28 @@ function buildHtml({
           <div class="service-chip"><span class="dot"></span> Vendor comparison</div>
           <div class="service-chip"><span class="dot"></span> Credex volume discounts</div>
           <div class="service-chip"><span class="dot"></span> Shareable reports</div>
+          <div class="service-chip"><span class="dot"></span> Real-time token tracking</div>
+          <div class="service-chip"><span class="dot"></span> Team usage analytics</div>
         </div>
       </div>
 
       <div class="cta-buttons">
         <a href="${reportUrl}" class="btn-primary">📄 View Full Report →</a>
-        <a href="https://calendly.com/mittalprakhar504/30min" class="btn-secondary">📅 Book Free Consultation</a>
+        <a href="https://calendly.com/mittalprakhar504/30min" class="btn-secondary">📅 Book Free Consultation →</a>
       </div>
 
-      <p style="font-size:12px;color:#64748b;text-align:center;margin-top:16px;">
+      <div class="privacy-note">
         🔒 Your data is private. We never share your information with third parties.
-      </p>
+      </div>
     </div>
 
     <div class="footer">
-      <div class="footer-text"><strong>SpendWise AI</strong> — AI Cost Intelligence Platform</div>
-      <div class="footer-text" style="margin-top:8px;">Made for founders who want to scale smarter.</div>
+      <div class="footer-text"><strong>SpendWise AI</strong> – AI Cost Intelligence Platform</div>
+      <div class="footer-text" style="margin-top:6px;">Made for founders who want to scale smarter.</div>
       <hr />
       <div class="footer-text">
-        You received this because you requested an AI spend audit.<br />
-        <a href="${baseUrl}">SpendWise AI</a> · <a href="${baseUrl}">Unsubscribe</a>
+        You received this email because you requested an AI spend audit.<br />
+        <a href="${baseUrl}">Unsubscribe</a> | <a href="${baseUrl}">Privacy Policy</a>
       </div>
     </div>
   </div>
