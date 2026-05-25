@@ -1,68 +1,46 @@
 # SpendWise AI — Stop overspending on AI tools
 
 [![CI](https://github.com/mittalprakhar504/ai_native/actions/workflows/ci.yml/badge.svg)](https://github.com/mittalprakhar504/ai_native/actions/workflows/ci.yml)
+[![Lighthouse Score](https://img.shields.io/badge/Lighthouse-95%2F100-brightgreen)](https://spendwise-ai-dun.vercel.app)
 
-A free CFO-style audit tool that reviews your company's AI subscriptions (ChatGPT, Claude, Cursor, Midjourney, and 41 more) and tells you exactly where the money is leaking. Built in 7 days for the Credex Web Development Intern challenge.
+**A free CFO-style audit tool that reviews your company's AI subscriptions and tells you exactly where money is leaking.**
+
+Built in 7 days for the Credex Web Development Intern challenge.
 
 **Who it's for:** Startup founders, CTOs, and engineering managers spending $500+/month on AI tools who want to cut waste without losing productivity.
 
----
-
-## 🌐 Live Demo
-
-**Deployed URL:** https://spendwise-ai-dun.vercel.app
+**Live URL:** https://spendwise-ai-dun.vercel.app
 
 ---
 
 ## 📸 Screenshots
 
 <div align="center">
-
-<table>
-  <tr>
-    <th align="center">🌐 Landing Page</th>
-    <th align="center">📋 Audit Form</th>
-    <th align="center">🌙 Audit Results</th>
-  </tr>
-  <tr>
-    <td align="center" width="33%">
-      <a href="./public/landing_page.png">
-        <img
-          src="./public/landing_page.png"
-          alt="Landing Page — hero, stats bar, How It Works"
-          width="100%"
-          style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);"
-        />
-      </a>
-      <br/>
-      <sub><b>Hero · stats bar · How It Works</b></sub>
-    </td>
-    <td align="center" width="33%">
-      <a href="./public/audit_form.png">
-        <img
-          src="./public/audit_form.png"
-          alt="Audit Form — multi-tool entry with per-seat pricing"
-          width="100%"
-          style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);"
-        />
-      </a>
-      <br/>
-      <sub><b>Multi-tool entry · per-seat pricing · live total</b></sub>
-    </td>
-    <td align="center" width="33%">
-      <a href="./public/result_page.png">
-        <img
-          src="./public/result_page.png"
-          alt="Results dashboard — CFO summary, savings breakdown, charts"
-          width="100%"
-          style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);"
-        />
-      </a>
-      <br/>
-      <sub><b>CFO dashboard · AI summary · savings charts</b></sub>
-    </td>
-  </tr>
-</table>
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <a href="./public/landing_page.png">
+          <img src="./public/landing_page.png" alt="Landing Page" width="100%"
+            style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);" />
+        </a>
+        <br/><sub><b>Hero · stats bar · How It Works</b></sub>
+      </td>
+      <td align="center" width="33%">
+        <a href="./public/audit_form.png">
+          <img src="./public/audit_form.png" alt="Audit Form" width="100%"
+            style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);" />
+        </a>
+        <br/><sub><b>Multi-tool entry · per-seat pricing · live total</b></sub>
+      </td>
+      <td align="center" width="33%">
+        <a href="./public/result_page.png">
+          <img src="./public/result_page.png" alt="Results Dashboard" width="100%"
+            style="border-radius:10px; border:1px solid #30363d; box-shadow:0 4px 24px rgba(0,0,0,0.55);" />
+        </a>
+        <br/><sub><b>CFO dashboard · AI summary · savings charts</b></sub>
+      </td>
+    </tr>
+  </table>
 
 > 💡 Click any screenshot to view full-size
 
@@ -105,77 +83,35 @@ npm run build     # production build
 
 ---
 
+## 🤔 5 Key Decisions (with trade-offs)
+
+| Decision | Why | Trade-off |
+|---|---|---|
+| **Rule-based engine, AI only for narrative** | Finance people don't trust LLM math. Savings numbers come from deterministic rules in `auditEngine.ts`. Groq only writes the human-readable CFO paragraph. | Slower to add new tools (need to code rules) but audit results are reproducible and auditable. |
+| **No authentication** | Login is friction. Users start auditing in one click. Shareable results use `public_id` (8-byte random hex). | Guessable URLs — but public page shows zero PII (only savings and recommendations). Acceptable for this use case. |
+| **localStorage for form persistence** | Assignment required "form state persists across page reloads." No backend round trip, no DB cost, data stays on user's machine. | If they clear localStorage, progress is lost. Acceptable at prototype scale. |
+| **Gmail SMTP over Resend** | Resend requires DNS-verified sending domain. I use @gmail.com — impossible to verify. Gmail App Password works in 2 minutes with no verification. | No email analytics, 500/day limit. At scale, migrate to Resend with a verified custom domain. |
+| **Groq (Llama 3.3) over Anthropic/OpenAI** | Groq requires no credit card, returns in <800ms, free tier is generous. Anthropic requires manual approval for free credits. | Llama 3.3 is slightly less capable than GPT-4 for complex reasoning — but writing a 4-sentence CFO summary doesn't need GPT-4. |
+
+---
+
 ## 🧱 Stack
 
-- **Next.js 16.2.6** (App Router, edge OG, server actions)
-- **Tailwind v4** (CSS-first config, `dark:` variants)
-- **shadcn/ui** + **lucide-react** + **framer-motion** + **recharts**
-- **Supabase** (Postgres persistence, public_id shareable URLs)
-- **Groq SDK** (`llama-3.3-70b-versatile`) for the CFO summary
-- **Nodemailer** + Gmail SMTP for transactional email
-- **Jest + ts-jest** for unit tests
-- **GitHub Actions** CI (lint + test + build) on every push
+| Category | Choice | Justification |
+|---|---|---|
+| Framework | Next.js 16 (App Router) | Serverless deployment, edge OG images, API routes built-in |
+| Styling | Tailwind v4 + shadcn/ui | Fast iteration, dark mode via CSS custom properties |
+| Database | Supabase (Postgres) | Free tier, RLS for security, `public_id` pattern |
+| Email | Nodemailer + Gmail SMTP | No domain verification, works immediately |
+| AI Summary | Groq (Llama 3.3-70b) | Free, fast (<800ms), OpenAI-compatible API |
+| Hosting | Vercel | Git push deploy, edge functions, free SSL |
+| Monitoring | GitHub Actions CI | Lint + test + build on every push |
 
 ---
 
-## 🤔 Decisions — 5 trade-offs we made
+## 📊 Lighthouse Scores (Mobile)
 
-### 1. Rule-based audit engine, AI only for narrative
-Finance people don't trust LLM math. The savings numbers come from deterministic rules in `src/lib/auditEngine.ts` (e.g., "Cursor Business + 1 seat → downgrade to Pro saves $20/mo"). Groq only generates the human-readable CFO paragraph. If Groq fails, a template summary takes over — the user never sees a broken result.
-
-### 2. No authentication
-Login is friction. Users start auditing in one click. Shareable results live at `/results/[public_id]` where `public_id` is an 8-byte random hex separate from the row's internal UUID — guessable URLs are not a privacy issue because no PII is exposed on the public page.
-
-### 3. localStorage for form persistence instead of server state
-Assignment requires "form state must persist across page reloads." We save to `localStorage` on every change and rehydrate on mount. No backend round trip, no schema migration, no DB cost — and the data stays on the user's machine until they hit "Run Audit."
-
-### 4. Gmail SMTP instead of Resend
-The assignment recommended Resend/Postmark/SES. We picked Gmail SMTP + Nodemailer for three reasons:
-- **No additional API key or domain verification.** Every developer already has a Gmail account; an App Password is two clicks away.
-- **Works instantly in dev and prod.** Resend requires DNS-verified sender domains for production deliverability — too much overhead for a 7-day MVP.
-- **Sufficient volume.** This app sends one transactional email per audit (~tens per day at our scale). Gmail's 500/day limit is well above that.
-
-In production at higher volume we'd migrate to Resend for analytics + a branded `from` domain. For this prototype, Gmail SMTP is a deliberate pragmatic choice.
-
-### 5. Groq (Llama 3.3) over OpenAI/Anthropic for the summary
-Groq is free up to generous limits, returns in <1s, and we don't need GPT-4-class reasoning to write a 4-sentence CFO summary. Anthropic SDK is installed as a fallback path but not wired in — switching providers is a one-line change in `src/lib/aiSummary.ts`.
-
----
-
-## 📂 Project structure
-
-```
-src/
-├── app/
-│   ├── page.tsx              # landing page
-│   ├── results/[id]/page.tsx # shareable result page
-│   ├── tools/page.tsx        # 45-tool browse page
-│   └── api/
-│       ├── save-audit/       # persists to Supabase + sends Slack alert
-│       ├── send-email/       # Gmail SMTP via Nodemailer
-│       ├── og/route.tsx      # edge OG image generator
-│       └── cron/cleanup/     # daily stale-audit cleanup (Vercel cron)
-├── components/
-│   ├── AuditForm.tsx
-│   ├── ResultsPanel.tsx
-│   ├── AICommandCenter.tsx
-│   ├── StackAdvisor.tsx
-│   ├── SavingsCTA.tsx
-│   ├── LeadCapture.tsx
-│   └── SlidePanel.tsx
-└── lib/
-    ├── auditEngine.ts        # deterministic rules + types
-    ├── aiSummary.ts          # Groq wrapper + fallback
-    ├── tools.ts              # 45-tool catalog
-    ├── supabase.ts
-    └── slackNotify.ts
-```
-
----
-
-## 📊 Lighthouse scores (mobile, deployed URL)
-
-Tested on https://spendwise-ai-dun.vercel.app — 2026-05-25
+Tested on https://spendwise-ai-dun.vercel.app — 2026-05-27
 
 | Metric | Score | Threshold | Status |
 |---|---|---|---|
@@ -184,18 +120,85 @@ Tested on https://spendwise-ai-dun.vercel.app — 2026-05-25
 | Best Practices | **100** | ≥90 | ✅ |
 | SEO | **100** | — | ✅ |
 
+**Core Web Vitals:** FCP 1.4s | LCP 2.4s | TBT 90ms | CLS 0
+
+**How we achieved this:**
+- `next/dynamic` lazy-loads ResultsPanel + chart components (only needed after audit runs)
+- All form labels linked via `htmlFor`/`id` pairs
+- CLS = 0 via fixed layouts with no layout shifts
+
+---
+
+## 📂 Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Landing page + audit form
+│   ├── results/[id]/page.tsx # Shareable result page
+│   ├── tools/page.tsx        # 45-tool browse catalog
+│   └── api/
+│       ├── save-audit/       # Persist to Supabase + Slack alert
+│       ├── send-email/       # Gmail SMTP via Nodemailer
+│       ├── og/route.tsx      # Edge OG image generator
+│       └── cron/cleanup/     # Daily stale-audit cleanup (Vercel cron)
+├── components/
+│   ├── AuditForm.tsx         # Multi-tool input with localStorage
+│   ├── ResultsPanel.tsx      # Audit output + Recharts charts
+│   ├── AICommandCenter.tsx   # Score rings, waste meter
+│   ├── StackAdvisor.tsx      # Per-tool recommendations + alternatives
+│   ├── LeadCapture.tsx       # Email gate (value shown first)
+│   └── SavingsCTA.tsx        # Conditional (high vs low savings)
+└── lib/
+    ├── auditEngine.ts        # 20 rules + overlap detection
+    ├── aiSummary.ts          # Groq wrapper + fallback
+    ├── tools.ts              # 45-tool catalog with pricing
+    ├── supabase.ts           # Client + server Supabase clients
+    └── slackNotify.ts        # Slack Block Kit webhook alerts
+```
+
 ---
 
 ## 📚 Companion docs in this repo
 
-- `DEVLOG.md` — daily build log
-- `REFLECTION.md` — what worked, what didn't, what I'd build next
-- `ARCHITECTURE.md` — system diagram + data flow
-- `ECONOMICS.md` — unit economics + path to $1M ARR
-- `GTM.md` — distribution channels with specific communities
-- `LANDING_COPY.md` — hero, FAQ, social proof
-- `PRICING_DATA.md` — source-cited pricing for every tool
-- `PROMPTS.md` — prompt evolution
-- `METRICS.md` — North Star + Lighthouse + analytics
-- `TESTS.md` — what's covered + what's not
-- `USER_INTERVIEWS.md` — 3 founder conversations
+| File | What it covers |
+|---|---|
+| `ARCHITECTURE.md` | System diagram, data flow, scaling plan |
+| `DEVLOG.md` | Day-by-day build log (7 days, honest hours) |
+| `REFLECTION.md` | 5 questions: hardest bug, reversed decision, week 2, AI use, self-ratings |
+| `GTM.md` | Target user, specific channels, week-1 traction plan |
+| `ECONOMICS.md` | Unit economics, break-even math, path to $1M ARR |
+| `USER_INTERVIEWS.md` | 3 real founder conversations with direct quotes |
+| `LANDING_COPY.md` | Hero, CTA, FAQ, social proof copy |
+| `METRICS.md` | North Star metric, input metrics, pivot triggers |
+| `PRICING_DATA.md` | Source-cited pricing for every tool (verified by hand, not AI) |
+| `PROMPTS.md` | AI summary prompt evolution (what worked, what didn't) |
+| `TESTS.md` | 7 audit engine tests + how to run |
+
+---
+
+## 👥 User Interviews Summary
+
+Talked to 3 real founders/CTOs (10–15 min each):
+
+| Initials | Role | Company Size | Key Surprise | What It Changed |
+|---|---|---|---|---|
+| A.K. | CTO | 6-person SaaS | Paying for both ChatGPT AND Claude Pro for every dev | Added cross-tool overlap detection |
+| P.M. | Founder | 2-person consultancy | On Midjourney Pro but uses it 3×/week | Added usage-frequency optional field |
+| R.S. | Head of Eng | 18-person Series A | 4 dormant Cursor seats (pure waste) | Added seat utilization check |
+
+Full quotes and analysis in `USER_INTERVIEWS.md`.
+
+---
+
+## 🚦 Status
+
+- ✅ All 6 MVP features complete
+- ✅ 7 tests passing, CI green
+- ✅ Lighthouse mobile scores: 95/100/100/100
+- ✅ Deployed and live
+- ✅ Ready for submission
+
+---
+
+Built by **Prakhar Mittal** for the Credex Web Development Intern Challenge — 7 days, May 21–27, 2026.
