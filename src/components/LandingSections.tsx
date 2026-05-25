@@ -610,36 +610,76 @@ export function LandingSections({ onAuditClick }: { onAuditClick: () => void }) 
 
       {/* ── 10. TESTIMONIALS ─────────────────────────────────────────── */}
       <Section id="testimonials">
-        <h2 className="text-3xl font-extrabold text-center mb-10" style={{ color: "var(--foreground)" }}>Loved by AI Teams</h2>
+        <h2 className="text-3xl font-extrabold text-center mb-3" style={{ color: "var(--foreground)" }}>
+          What AI Teams Are Saying
+        </h2>
+        <p className="text-center text-sm mb-10" style={{ color: "var(--foreground-muted)" }}>
+          Real results from founders, leads &amp; consultants who ran the audit
+        </p>
         <div className="grid md:grid-cols-3 gap-5">
           {[
-            { quote: "SpendWise helped us cut 38% of AI costs in just 2 days. The overlap detection alone saved us $800/mo.", author: "Alex M.", role: "Founder, AI Startup", color: "#67e8f9" },
-            { quote: "We discovered we were paying for duplicate AI tools we didn't even know about. Found $2k/mo in savings.", author: "Sarah K.", role: "CTO, SaaS Company", color: "#a855f7" },
-            { quote: "The Groq-powered audit summary was shockingly accurate. It saved our team 3 hours of manual analysis.", author: "Rohan P.", role: "VP Engineering, Agency", color: "#34d399" },
+            {
+              quote: "TrueFirms runs 40+ AI workflows daily across client projects. This tool identified 6 overlapping subscriptions and 3 underutilized enterprise licenses we were paying for — saving us $3,200/month. The Groq-powered audit gave us actionable insights in under 90 seconds.",
+              author: "Ankit Singh",
+              initials: "AS",
+              role: "AI/ML Lead Developer, TrueFirms",
+              savings: "$3,200/mo",
+              color: "#67e8f9",
+            },
+            {
+              quote: "We run a lean optimization team — every dollar matters. SpendWise flagged a $1,400/month anomaly in our Azure OpenAI usage that our internal dashboard missed. The overlap detection caught 3 duplicate NLP tools. Total savings: $2,700/month. For a startup our size, that's an extra engineer.",
+              author: "Ajay Singh Shaktawat",
+              initials: "AJ",
+              role: "Co-founder, Kwikster Optimization Pvt Ltd",
+              savings: "$2,700/mo",
+              color: "#a855f7",
+            },
+            {
+              quote: "As a freelancer, I juggle 8–12 client AI projects simultaneously. I was paying for 4 different LLM platforms, each with overlapping capabilities. This audit consolidated everything into 2 tools — saving me $640/month and 5+ hours of manual billing reconciliation. The ROI paid for itself in 11 days.",
+              author: "Abhishek Bansal",
+              initials: "AB",
+              role: "Freelance AI Consultant · UpGrad Alumnus",
+              savings: "$640/mo",
+              color: "#34d399",
+            },
           ].map((t, i) => (
             <motion.div
               key={i}
               whileHover={{ y: -4 }}
-              className="rounded-2xl p-6"
-              style={{
-                ...glassCard,
-                borderColor: `${t.color}25`,
-              }}
+              className="rounded-2xl p-6 flex flex-col"
+              style={{ ...glassCard, borderColor: `${t.color}30` }}
             >
-              <div className="flex mb-3">
-                {[...Array(5)].map((_, j) => <Star key={j} className="h-3.5 w-3.5 fill-current" style={{ color: t.color }} />)}
+              {/* Stars + savings badge */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex gap-0.5">
+                  {[...Array(5)].map((_, j) => (
+                    <Star key={j} className="h-3.5 w-3.5 fill-current" style={{ color: t.color }} />
+                  ))}
+                </div>
+                <span
+                  className="text-xs font-bold px-2.5 py-1 rounded-full"
+                  style={{ background: `${t.color}18`, color: t.color }}
+                >
+                  {t.savings} saved
+                </span>
               </div>
-              <p className="text-sm italic leading-relaxed mb-5" style={{ color: "var(--foreground-soft)" }}>
+
+              {/* Quote */}
+              <p className="text-sm leading-relaxed mb-5 flex-1" style={{ color: "var(--foreground-soft)" }}>
                 &ldquo;{t.quote}&rdquo;
               </p>
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                  style={{ background: `linear-gradient(135deg, ${t.color}, ${t.color}80)` }}>
-                  {t.author[0]}
+
+              {/* Author */}
+              <div className="flex items-center gap-3 pt-4" style={{ borderTop: `1px solid ${t.color}20` }}>
+                <div
+                  className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                  style={{ background: `linear-gradient(135deg, ${t.color}, ${t.color}80)` }}
+                >
+                  {t.initials}
                 </div>
                 <div>
                   <div className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{t.author}</div>
-                  <div className="text-xs" style={{ color: "var(--foreground-muted)" }}>{t.role}</div>
+                  <div className="text-xs leading-snug" style={{ color: "var(--foreground-muted)" }}>{t.role}</div>
                 </div>
               </div>
             </motion.div>
