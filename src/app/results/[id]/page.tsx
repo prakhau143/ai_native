@@ -124,7 +124,6 @@ export default async function ResultsPage({ params, searchParams }: Props) {
         {/* Main results */}
         <ResultsPanel
           result={result}
-          onReset={() => { /* server component — no state */ }}
           shareUrl={publicShareUrl}
           isSharedView={isPublic}
         />

@@ -18,7 +18,7 @@ export type { AuditResult, Recommendation };
 
 type ResultsPanelProps = {
   result: AuditResult;
-  onReset: () => void;
+  onReset?: () => void;   // optional — server components cannot pass plain functions
   shareUrl?: string;
   isSharedView?: boolean;
 };
@@ -244,6 +244,7 @@ function RecommendationCard({ rec, index }: { rec: Recommendation; index: number
 }
 
 export function ResultsPanel({ result, onReset, shareUrl }: ResultsPanelProps) {
+  const handleReset = onReset ?? (() => { window.location.href = "/"; });
   const animatedSaving = useCountUp(result.totalSaving, 1400);
   const animatedAnnual = useCountUp(result.annualSaving, 1600);
   const animatedPercent = useCountUp(result.savingPercent, 1200);
@@ -284,7 +285,7 @@ export function ResultsPanel({ result, onReset, shareUrl }: ResultsPanelProps) {
         {/* Top actions bar */}
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={onReset}
+            onClick={handleReset}
             className="flex items-center gap-2 text-sm transition-colors px-3 py-1.5 rounded-lg"
             style={{ color: "var(--foreground)", opacity: 0.5 }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
@@ -559,7 +560,7 @@ export function ResultsPanel({ result, onReset, shareUrl }: ResultsPanelProps) {
               Book Free Strategy Call
             </button>
             <button
-              onClick={onReset}
+              onClick={handleReset}
               className="w-full sm:w-auto rounded-xl px-7 py-3 text-sm font-medium transition-colors hover:opacity-80"
               style={{ border: "1px solid var(--card-border)", color: "var(--foreground)", opacity: 0.6 }}
             >
