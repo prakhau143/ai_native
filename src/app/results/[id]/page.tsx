@@ -25,7 +25,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
   if (!data) return { title: "Audit not found" };
 
-  const saving = data.savings as number;
+  const saving = (data.savings as number) ?? 0;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://spendwiseai.com";
 
   return {
