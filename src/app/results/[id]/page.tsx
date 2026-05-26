@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { HighSavingsCTA, LowSavingsCTA } from "@/components/SavingsCTA";
@@ -72,17 +73,17 @@ export default async function ResultsPage({ params, searchParams }: Props) {
       {/* Minimal header for shared view */}
       <header className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between"
         style={{ backdropFilter: "blur(20px)", background: "rgba(5,11,26,0.7)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-        <a href="/" className="text-lg font-bold" style={{ background: "linear-gradient(90deg,#ffffff,#67e8f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+        <Link href="/" className="text-lg font-bold" style={{ background: "linear-gradient(90deg,#ffffff,#67e8f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
           SpendWiseAI
-        </a>
+        </Link>
         {!isPublic && displayEmail && (
           <span className="text-xs text-slate-500">{displayEmail}{displayCompany ? ` · ${displayCompany}` : ""}</span>
         )}
         {isPublic && (
-          <a href="/#audit" className="text-xs px-3 py-1.5 rounded-full text-white font-medium"
+          <Link href="/#audit" className="text-xs px-3 py-1.5 rounded-full text-white font-medium"
             style={{ background: "linear-gradient(135deg,#06b6d4,#6366f1)" }}>
             Run my own audit →
-          </a>
+          </Link>
         )}
       </header>
 

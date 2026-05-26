@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Logo } from "./Logo";
@@ -27,9 +28,9 @@ export function Header() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <a href="/" className="flex items-center shrink-0">
+          <Link href="/" className="flex items-center shrink-0">
             <Logo />
-          </a>
+          </Link>
 
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
@@ -50,13 +51,13 @@ export function Header() {
           <div className="flex items-center gap-3">
             <ThemeToggle />
 
-            <a
+            <Link
               href="/#audit"
               className="hidden sm:inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 btn-primary"
             >
               Free Audit
               <span className="text-xs opacity-80">→</span>
-            </a>
+            </Link>
 
             <button
               className="md:hidden p-2 rounded-lg transition-colors hover:bg-black/5 dark:hover:bg-white/10"
@@ -90,13 +91,13 @@ export function Header() {
                 {link.label}
               </a>
             ))}
-            <a
+            <Link
               href="/#audit"
               onClick={() => setMobileOpen(false)}
               className="mt-2 rounded-full px-5 py-2.5 text-sm font-semibold text-center btn-primary"
             >
               Start Free Audit
-            </a>
+            </Link>
           </div>
         </div>
       )}

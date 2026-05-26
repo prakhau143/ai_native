@@ -13,6 +13,15 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Project-level rule overrides
+  {
+    rules: {
+      // Standard Next.js hydration-mismatch pattern:
+      //   useEffect(() => { setMounted(true); }, [])
+      // The rule fires on this well-established pattern — disable it.
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

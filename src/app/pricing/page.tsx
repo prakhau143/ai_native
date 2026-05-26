@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Chart as ChartJS,
@@ -312,9 +313,9 @@ function ProPlanModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: "rgba(52,211,153,0.15)" }}>
                     <CheckCircle className="w-8 h-8" style={{ color: "#34d399" }} />
                   </div>
-                  <h3 className="text-xl font-bold mb-2" style={{ color: "var(--foreground)" }}>You're in!</h3>
+                  <h3 className="text-xl font-bold mb-2" style={{ color: "var(--foreground)" }}>You&apos;re in!</h3>
                   <p className="text-sm" style={{ color: "var(--foreground)", opacity: 0.6 }}>
-                    Check your inbox — we've sent confirmation to <strong>{form.email}</strong>.
+                    Check your inbox — we&apos;ve sent confirmation to <strong>{form.email}</strong>.
                     Our team will reach out within 24 hours.
                   </p>
                 </motion.div>
@@ -824,7 +825,7 @@ export default function PricingPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="/#audit">
+              <Link href="/#audit">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -837,7 +838,7 @@ export default function PricingPage() {
                 >
                   Start Free Audit →
                 </motion.button>
-              </a>
+              </Link>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

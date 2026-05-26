@@ -163,7 +163,6 @@ export function AICommandCenter({ result }: Props) {
 
   // Chart data: split predictive into actual vs forecast series
   const predictActual = predictiveTrend.filter((p) => p.actual !== undefined);
-  const predictForecast = predictiveTrend.filter((p) => p.forecast !== undefined);
   // For recharts we merge them into one array so the x-axis is continuous
   const trendData = predictiveTrend.map((p) => ({
     month: p.month,

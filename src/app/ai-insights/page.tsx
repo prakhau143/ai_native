@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -544,7 +545,7 @@ export default function AIInsightsPage() {
             <p className="mb-8" style={{ color: "rgba(255,255,255,0.7)" }}>
               Get a free personalised audit powered by Groq AI — results in under 2 minutes.
             </p>
-            <a href="/#audit">
+            <Link href="/#audit">
               <button
                 className="px-10 py-4 rounded-2xl font-bold transition-all hover:scale-105 active:scale-95"
                 style={{
@@ -555,7 +556,7 @@ export default function AIInsightsPage() {
               >
                 Run Free Audit →
               </button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
