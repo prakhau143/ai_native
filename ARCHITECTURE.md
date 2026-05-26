@@ -16,32 +16,32 @@
 ## System Diagram
 
 ```mermaid
-graph TD
-    User[User with browser] -->|GET| Landing[Landing Page /]
-    Landing -->|Fills form + clicks Run| AuditForm[AuditForm component]
-    AuditForm -->|tools[] + spend[]| AuditEngine[auditEngine.ts]
+flowchart TD
+    A[User Browser] -->|GET| B[Landing Page]
+    B -->|Fill form and click Run| C[AuditForm Component]
+    C -->|tools and spend data| D[auditEngine.ts]
 
-    AuditEngine -->|RULES: 20 deterministic checks| Result[AuditResult]
-    AuditEngine -->|detectOverlap| CrossTool[Cross-tool savings]
+    D -->|20 deterministic rules| E[AuditResult]
+    D -->|detectOverlap| F[Cross-tool Savings]
 
-    Result -->|savings > $500| HighCTA[HighSavingsCTA]
-    Result -->|savings < $100| LowCTA[LowSavingsCTA]
-    Result -->|Any savings| LeadModal[LeadCapture modal]
+    E -->|savings above 500| G[HighSavingsCTA]
+    E -->|savings below 100| H[LowSavingsCTA]
+    E -->|any savings| I[LeadCapture Modal]
 
-    LeadModal -->|email + auditId| SaveAPI[/api/save-audit]
-    SaveAPI -->|INSERT| Supabase[(Supabase audits)]
-    SaveAPI -->|POST| Slack[Slack webhook]
-    SaveAPI -->|returns public_id| EmailAPI[/api/send-email]
+    I -->|email and auditId| J[save-audit API]
+    J -->|INSERT| K[(Supabase audits)]
+    J -->|webhook| L[Slack Alert]
+    J -->|returns public_id| M[send-email API]
 
-    EmailAPI -->|SMTP| Gmail[Gmail SMTP]
-    Gmail -->|Delivers| UserInbox[User's inbox]
+    M -->|SMTP| N[Gmail SMTP]
+    N -->|delivery| O[User Inbox]
 
-    LeadModal -->|public_id| ResultPage[/results/:publicId]
-    ResultPage -->|Fetch by public_id| Supabase
-    ResultPage -->|OG image| OGAPI[/api/og]
-    OGAPI -->|Edge runtime| TwitterCard[Twitter/LinkedIn preview]
+    I -->|public_id| P[results page]
+    P -->|fetch by public_id| K
+    P -->|OG image request| Q[og API route]
+    Q -->|edge runtime| R[Social Media Preview]
 
-    Cron[Vercel Cron - daily] -->|DELETE stale| Supabase
+    S[Vercel Cron daily] -->|DELETE stale| K
 ```
 
 ---

@@ -1,6 +1,6 @@
 # SpendWise AI — Stop overspending on AI tools
 
-[![CI](https://github.com/mittalprakhar504/ai_native/actions/workflows/ci.yml/badge.svg)](https://github.com/mittalprakhar504/ai_native/actions/workflows/ci.yml)
+[![CI](https://github.com/prakhau143/ai_native/actions/workflows/ci.yml/badge.svg)](https://github.com/prakhau143/ai_native/actions/workflows/ci.yml)
 [![Lighthouse Score](https://img.shields.io/badge/Lighthouse-95%2F100-brightgreen)](https://spendwise-ai-dun.vercel.app)
 
 **A free CFO-style audit tool that reviews your company's AI subscriptions and tells you exactly where money is leaking.**
@@ -51,7 +51,7 @@ Built in 7 days for the Credex Web Development Intern challenge.
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/mittalprakhar504/ai_native.git
+git clone https://github.com/prakhau143/ai_native.git
 cd ai_native
 npm install
 cp .env.example .env.local
