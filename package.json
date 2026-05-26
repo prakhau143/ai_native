@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -32,7 +32,7 @@
     "@supabase/supabase-js": "^2.106.1",
     "@tailwindcss/postcss": "^4",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20",
+    "@types/node": "^20.19.41",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
@@ -41,6 +41,7 @@
     "resend": "^6.12.3",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.10",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
