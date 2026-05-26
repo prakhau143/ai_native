@@ -61,7 +61,31 @@ export default async function ResultsPage({ params, searchParams }: Props) {
 
   if (error || !data) notFound();
 
-  const result = data.result as AuditResult;
+  // Normalize result for backward compatibility — audits saved with an older
+  // version of the engine may be missing fields added later (spendTrend,
+  // vendorConcentration, predictiveTrend, benchmarkData, etc.).
+  // Providing empty-array defaults prevents chart components from crashing
+  // when they call .map() or .filter() on these fields.
+  const raw = (data.result ?? {}) as Partial<AuditResult>;
+  const result: AuditResult = {
+    totalCurrentCost: raw.totalCurrentCost ?? 0,
+    totalNewCost: raw.totalNewCost ?? 0,
+    totalSaving: raw.totalSaving ?? 0,
+    annualSaving: raw.annualSaving ?? 0,
+    savingPercent: raw.savingPercent ?? 0,
+    savingsTier: raw.savingsTier ?? "optimal",
+    wasteScore: raw.wasteScore ?? 0,
+    efficiencyScore: raw.efficiencyScore ?? 100,
+    stackMaturityScore: raw.stackMaturityScore ?? 0,
+    recommendations: raw.recommendations ?? [],
+    summary: raw.summary ?? "",
+    spendTrend: raw.spendTrend ?? [],
+    categoryBreakdown: raw.categoryBreakdown ?? [],
+    topWastedTools: raw.topWastedTools ?? [],
+    vendorConcentration: raw.vendorConcentration ?? [],
+    predictiveTrend: raw.predictiveTrend ?? [],
+    benchmarkData: raw.benchmarkData ?? [],
+  };
 
   // Strip personal fields for public view
   const displayEmail = isPublic ? null : (data.email as string);

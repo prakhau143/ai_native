@@ -22,6 +22,26 @@ type Props = {
 };
 
 export function SpendTrendChart({ trend, totalSaving }: Props) {
+  // Guard: older audits may not have spendTrend — render a placeholder instead of crashing
+  if (!trend || trend.length === 0) {
+    return (
+      <div
+        className="rounded-2xl p-5 sm:p-6 h-full flex flex-col items-center justify-center"
+        style={{
+          background: "var(--card)",
+          border: "1px solid var(--card-border)",
+          backdropFilter: "blur(18px)",
+          WebkitBackdropFilter: "blur(18px)",
+          minHeight: "180px",
+        }}
+      >
+        <p className="text-xs" style={{ color: "var(--foreground)", opacity: 0.4 }}>
+          Spend trend not available for this report
+        </p>
+      </div>
+    );
+  }
+
   const labels = trend.map((t) => t.month);
   const currentData = trend.map((t) => t.current);
   const optimizedData = trend.map((t) => t.optimized);
