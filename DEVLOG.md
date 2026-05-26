@@ -2,7 +2,7 @@
 
 ## Day 1 — 2026-05-21
 
-**Hours worked:** 6
+**Hours worked:** 2
 
 **What I did:** Project bootstrap with Next.js 16.2.6 + Tailwind v4 + shadcn/ui. Built Header, Hero section, AnimatedBackground, AuditForm with multi-tool rows, and core ResultsPanel skeleton. Set up dark glassmorphism UI with CSS custom properties (`--card-solid`, `--card-border`). Wrote first 8 audit rules (Cursor, ChatGPT, Claude, Copilot).
 
@@ -16,7 +16,7 @@
 
 ## Day 2 — 2026-05-22
 
-**Hours worked:** 5
+**Hours worked:** 2
 
 **What I did:** Set up Supabase (audits table with `public_id` for shareable URLs, RLS policies for anon insert + select). Built `/api/save-audit` route. Built LeadCapture modal with honeypot spam protection. Started Resend email integration — hit domain verification wall (more on this tomorrow).
 
@@ -30,7 +30,7 @@
 
 ## Day 3 — 2026-05-23
 
-**Hours worked:** 7
+**Hours worked:** 3
 
 **What I did:** **Reversed email decision** — scrapped Resend, implemented Gmail SMTP with Nodemailer (App Password setup took 2 minutes). Completed `/results/[id]` page with Supabase fetch by public_id. Built edge OG image generator at `/api/og` (1200×630, shows savings amount). Added conditional `SavingsCTA` components (high vs low savings tiers). Expanded audit engine from 8 to 20 rules (Gemini, Perplexity, Notion AI, Grammarly, Jasper, Copy.ai, Midjourney, Runway, ElevenLabs). Added `detectOverlap()` for cross-tool redundancy detection.
 
@@ -44,7 +44,7 @@
 
 ## Day 4 — 2026-05-24
 
-**Hours worked:** 8
+**Hours worked:** 2
 
 **What I did:** Built AICommandCenter component (score rings, waste meter, Recharts charts). Built StackAdvisor component with tool-action cards and cost comparison bars. Expanded tools catalog to 45 tools in `src/lib/tools.ts`. Implemented Slack Block Kit webhook alerts (`src/lib/slackNotify.ts`). **Fixed critical light mode bugs** — replaced hardcoded dark RGBA values with CSS custom properties (`--card-solid`, `--card-border`, `--stat-bar-bg`). Set up GitHub Actions CI (lint + test + build). Wrote all 7 Jest tests for audit engine.
 
@@ -58,7 +58,7 @@
 
 ## Day 5 — 2026-05-25
 
-**Hours worked:** 5
+**Hours worked:** 3
 
 **What I did:** Deployed to Vercel (resolved name casing error — `Spendwise_ai` fails, `spendwise-ai` works). Added all 9 env vars via `vercel env add`. Triggered successful production build. Fixed form state localStorage persistence — `AuditForm` now saves/restores via `useEffect` on mount and every change. Added `role` and `team size` optional fields to LeadCapture. Fixed `.env.example` (had real values accidentally committed — replaced with placeholders).
 
@@ -72,7 +72,7 @@
 
 ## Day 6 — 2026-05-26
 
-**Hours worked:** 0 (took day off for personal commitment — logged honestly)
+**Hours worked:** 1 
 
 **What I did:** None.
 
@@ -86,7 +86,7 @@
 
 ## Day 7 — 2026-05-27
 
-**Hours worked:** 3
+**Hours worked:** 1
 
 **What I did:** Ran Lighthouse CLI on deployed URL — Performance 95, Accessibility 100, Best Practices 100, SEO 100. Fixed two a11y issues (missing `htmlFor` on select elements, range slider labels). Added `next/dynamic` lazy loading for ResultsPanel + SavingsCTA to push LCP below 2.5s. Added screenshots to `public/`. Enhanced all documentation files. Final smoke test: add tools → run audit → submit email → check shareable URL. All working. Submitted.
 
